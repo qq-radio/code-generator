@@ -1,0 +1,239 @@
+<template>
+  <div class="m-5">
+    <a-collapse v-model:activeKey="activeKey">
+      <a-collapse-panel key="configure-panel" header="Configure panel">
+        <a-form labelAlign="left" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
+          <a-form-item v-for="(formItem, index) in formConfigs" :key="index" :label="formItem.label">
+            <template v-if="formItem.component === 'a-radio-group'">
+              <a-radio-group v-model:value="formValues[formItem.field]" v-bind="formItem.componentProps" />
+            </template>
+
+            <template v-else>
+              <a-input v-model:value="formValues[formItem.field]" v-bind="formItem.componentProps" />
+            </template>
+          </a-form-item>
+        </a-form>
+        <div>
+          <a-button type="primary" @click="fetchData">
+
+            <template #icon>
+              <RightOutlined />
+            </template>
+            Send Request
+          </a-button>
+          <a-button type="primary" @click="openPreviewJsonModal">
+
+            <template #icon>
+              <EyeOutlined />
+            </template>
+            Preview JSON
+          </a-button>
+          <a-button type="primary" @click="downloadInterfaceData">
+
+            <template #icon>
+              <DownloadOutlined />
+            </template>
+            Download Interface Data
+          </a-button>
+          <a-button type="primary" @click="downloadSchemas">
+
+            <template #icon>
+              <DownloadOutlined />
+            </template>
+            Download Schemas
+          </a-button>
+        </div>
+      </a-collapse-panel>
+      <a-collapse-panel v-if="codeConfig?.requestSettingConfig" key="request-panel" header="Request panel">
+        <PropertyPanel ref="requestPanelRef" propertyType='REQUEST' :settingConfig="codeConfig.requestSettingConfig"
+                       :properties="requestProperties" />
+      </a-collapse-panel>
+      <a-collapse-panel v-if="codeConfig?.responseSettingConfig" key="response-panel" header="Response panel">
+        <PropertyPanel ref="responsePanelRef" propertyType='RESPONSE' :settingConfig="codeConfig.responseSettingConfig"
+                       :properties="responseProperties" />
+      </a-collapse-panel>
+    </a-collapse>
+  </div>
+  <PreviewJsonModal v-model:visible="isPreviewJsonModalVisible" :data="previewJsonParams" />
+</template>
+
+<script setup lang="ts">
+import { downloadJson } from '@/composables/useDownload'
+import { globalConfig, codeConfigs } from '@/configs';
+import type { CodeType, Properties, DataSourceItem } from '@/types';
+import { axiosFetch, capitalizeFirstLetter } from '@/utils'
+import { getValueByPath, checkNotEmptyKeyValue } from '@/composables/useJson'
+
+import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue';
+import PreviewJsonModal from '@/components/PreviewJsonModal.vue';
+import PropertyPanel from './components/PropertyPanel.vue';
+import { message } from 'ant-design-vue';
+
+const getCodeConfig = (codeType: CodeType) => codeConfigs.find(i => i.codeType === codeType)
+
+const formConfigs = [
+  {
+    label: 'Please input yapi domain',
+    field: 'yapiDomain',
+    componentProps: {
+      disabled: true,
+    }
+  },
+  {
+    label: 'Please input project token',
+    field: 'projectToken',
+  },
+  {
+    label: 'Please input interface id',
+    field: 'interfaceId',
+  },
+  {
+    label: 'Please input request property keyPath',
+    field: 'requestPropertyKeyPath',
+  },
+  {
+    label: 'Please input response property keyPath',
+    field: 'responsePropertyKeyPath',
+  },
+  {
+    label: 'Please choose code type',
+    field: 'codeType',
+    component: 'a-radio-group',
+    componentProps: {
+      options: codeConfigs.sort((a, b) => a.sort - b.sort).map(config => ({ label: capitalizeFirstLetter(config.codeType), value: config.codeType })),
+      onChange: (event: any) => {
+        const value = event.target.value
+        formValues.value.responsePropertyKeyPath = getCodeConfig(value)?.responsePropertyKeyPath ?? globalConfig.responsePropertyKeyPath
+        cleanData()
+        fetchData()
+      },
+    },
+  },
+]
+
+const activeKey = ref(['configure-panel', 'request-panel', 'response-panel'])
+
+const formValues: Ref<{ codeType: CodeType } & { [key: string]: string; }> = ref({
+  codeType: globalConfig.codeType,
+  yapiDomain: globalConfig.yapiDomain,
+  projectToken: globalConfig.projectToken,
+  interfaceId: globalConfig.interfaceId,
+  requestPropertyKeyPath: globalConfig.requestPropertyKeyPath,
+  responsePropertyKeyPath: globalConfig.responsePropertyKeyPath,
+})
+
+const interfaceData = ref()
+
+const fetchData = async () => {
+  const isValid = checkNotEmptyKeyValue(formValues.value)
+  if (!isValid) {
+    message.warning('Please complete request fetch configure');
+    return
+  }
+  interfaceData.value = await axiosFetch(formValues.value)
+}
+
+const cleanData = async () => {
+  interfaceData.value = {}
+}
+
+fetchData()
+
+const codeConfig = computed(() => getCodeConfig(formValues.value.codeType))
+const requestProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath))
+const responseProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.responsePropertyKeyPath))
+
+const requestPanelRef = ref()
+const responsePanelRef = ref()
+
+const getDataSourceValues = (array: DataSourceItem[]) => {
+  const object: Record<string, any> = {}
+  array.forEach(i => object[i.field] = i.value)
+  return object
+}
+
+const requestDataSource = computed(() => requestPanelRef.value.getDataSourceArray.map(getDataSourceValues))
+const responseDataSource = computed(() => {
+  return responsePanelRef.value.getDataSourceArray.map(getDataSourceValues)
+})
+
+const getTableSchemas = () => {
+  const columns = [...responseDataSource.value];
+  for (const item of requestDataSource.value) {
+    const columnIndex = columns.findIndex(i => i.dataIndex === item.field)
+    if (columnIndex !== -1) {
+      const columnItem = {
+        ...columns[columnIndex],
+        searchConfig: { ...item },
+      }
+      columns.splice(columnIndex, 1, columnItem)
+    } else {
+      const columnItem = {
+        ifShow: false,
+        searchConfig: { ...item },
+      }
+      columns.push(columnItem)
+    }
+  }
+  return columns
+}
+
+const getFormSchemas = () => {
+  return requestDataSource.value
+}
+
+const getDescriptionSchemas = () => {
+  return responseDataSource.value
+}
+
+const getSchemas = () => {
+  let schemas = []
+  switch (formValues.value.codeType) {
+    case 'TABLE':
+      schemas = getTableSchemas()
+      break;
+    case 'FORM':
+      schemas = getFormSchemas()
+      break;
+    case 'DESCRIPTION':
+      schemas = getDescriptionSchemas()
+      break;
+    default:
+      break;
+  }
+  return schemas
+}
+
+
+/**
+ * preview json
+ */
+const isPreviewJsonModalVisible = ref(false);
+const previewJsonParams = ref();
+const openPreviewJsonModal = () => {
+  previewJsonParams.value = getSchemas()
+  isPreviewJsonModalVisible.value = true;
+}
+
+
+/**
+ * download json
+ */
+const downloadInterfaceData = async () => {
+  downloadJson(JSON.stringify(interfaceData.value), globalConfig.downloadFileName.interface)
+}
+
+const downloadSchemas = async () => {
+  downloadJson(JSON.stringify(getSchemas()), globalConfig.downloadFileName.schema)
+}
+</script>
+
+<style lang='less' scoped>
+.ant-btn {
+  margin-right: 20px;
+}
+
+/deep/ .ant-collapse-header-text {
+  font-weight: 600;
+}
+</style>
