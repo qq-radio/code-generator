@@ -3,7 +3,11 @@ import { clone } from 'remeda'
 export const parseJson = (obj: Record<string, any>): Record<string, any> => {
   for (const key in obj) {
     if (typeof obj[key] === 'string') {
-      obj[key] = JSON.parse(obj[key])
+      try {
+        obj[key] = JSON.parse(obj[key])
+      } catch (error) {
+        console.log(error)
+      }
     } else if (typeof obj[key] === 'object') {
       parseJson(obj[key])
     }

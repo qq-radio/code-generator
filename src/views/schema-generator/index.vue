@@ -57,14 +57,17 @@
   <PreviewJsonModal v-model:visible="isPreviewJsonModalVisible" :data="previewJsonParams" />
 </template>
 
+<script lang="ts">
+export default {
+  name: 'SchemaGeneratorIndex'
+}
+</script>
 <script setup lang="ts">
 import { downloadJson } from '@/utils/download'
+import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 import { globalConfig, codeConfigs } from '@/configs';
 import type { CodeType, Properties, DataSourceItem } from '@/types';
 import { axiosFetch } from '@/https'
-import { capitalizeFirstLetter } from '@/utils'
-import { getValueByPath, checkNotEmptyKeyValue } from '@/utils'
-
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue';
 import PreviewJsonModal from '@/components/PreviewJsonModal.vue';
 import PropertyPanel from '@/components/PropertyPanel.vue';
@@ -114,7 +117,15 @@ const formConfigs = [
 
 const activeKey = ref(['configure-panel', 'request-panel', 'response-panel'])
 
-const formValues: Ref<{ codeType: CodeType } & { [key: string]: string; }> = ref({
+type FetchConfig = {
+  codeType: CodeType
+  yapiDomain: string
+  projectToken: string
+  interfaceId: string
+  requestPropertyKeyPath: string
+  responsePropertyKeyPath: string
+}
+const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
   codeType: globalConfig.codeType,
   yapiDomain: globalConfig.yapiDomain,
   projectToken: globalConfig.projectToken,
