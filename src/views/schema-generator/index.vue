@@ -65,7 +65,7 @@ export default {
 <script setup lang="ts">
 import { downloadJson } from '@/utils/download'
 import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
-import { globalConfig, codeConfigs } from '@/configs';
+import { codeConfigs } from '@/configs';
 import type { CodeType, Properties, DataSourceItem } from '@/types';
 import { axiosFetch } from '@/https'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue';
@@ -106,8 +106,6 @@ const formConfigs = [
     componentProps: {
       options: codeConfigs.sort((a, b) => a.sort - b.sort).map(config => ({ label: capitalizeFirstLetter(config.codeType), value: config.codeType })),
       onChange: (event: any) => {
-        const value = event.target.value
-        formValues.value.responsePropertyKeyPath = getCodeConfig(value)?.responsePropertyKeyPath ?? globalConfig.responsePropertyKeyPath
         cleanData()
         fetchData()
       },
@@ -126,12 +124,28 @@ type FetchConfig = {
   responsePropertyKeyPath: string
 }
 const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
-  codeType: globalConfig.codeType,
-  yapiDomain: globalConfig.yapiDomain,
-  projectToken: globalConfig.projectToken,
-  interfaceId: globalConfig.interfaceId,
-  requestPropertyKeyPath: globalConfig.requestPropertyKeyPath,
-  responsePropertyKeyPath: globalConfig.responsePropertyKeyPath,
+  codeType: 'TABLE',
+  yapiDomain: 'yapiDomain',
+  projectToken: '',
+  interfaceId: '',
+  requestPropertyKeyPath: 'data.req_body_other.properties',
+  responsePropertyKeyPath: 'data.res_body.properties.data.properties.records.items.properties',
+})
+
+const storageKey = 'fetch-config'
+
+watch(
+  () => formValues.value,
+  (values) => {
+    window.localStorage.setItem(storageKey, JSON.stringify(values))
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  const values = JSON.parse(window.localStorage.getItem(storageKey) || '')
+  formValues.value = values
+  fetchData()
 })
 
 const interfaceData = ref()
@@ -148,8 +162,6 @@ const fetchData = async () => {
 const cleanData = async () => {
   interfaceData.value = {}
 }
-
-fetchData()
 
 const codeConfig = computed(() => getCodeConfig(formValues.value.codeType))
 const requestProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath))
@@ -231,13 +243,17 @@ const openPreviewJsonModal = () => {
 /**
  * download json
  */
+const downloadFileName = {
+  interface: 'interfaceData',
+  schema: 'schema'
+}
+
 const downloadInterfaceData = async () => {
-  console.log("downloadInterfaceData11",)
-  downloadJson(interfaceData.value, globalConfig.downloadFileName.interface)
+  downloadJson(interfaceData.value, downloadFileName.interface)
 }
 
 const downloadSchemas = async () => {
-  downloadJson(getSchemas(), globalConfig.downloadFileName.schema)
+  downloadJson(getSchemas(), downloadFileName.schema)
 }
 </script>
 

@@ -80,6 +80,25 @@ const getDataSourceArray = computed<DataSourceItem[][]>(() => dataSourceMap.valu
 
 const getDataSourceTitle = computed<string[]>(() => getDataSourceArray.value[0]?.map(i => i.field) || []);
 
+const storageKey = `data-source-${props.propertyType}`
+
+watch(
+  () => dataSourceMap.value,
+  (values) => {
+    window.localStorage.setItem(storageKey, JSON.stringify(Array.from(values.entries())))
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  const storedData = window.localStorage.getItem(storageKey);
+  if (storedData) {
+    const values = JSON.parse(storedData);
+    dataSourceMap.value = new Map(values);
+    checkedPropertyKeys.value = Array.from(dataSourceMap.value.keys())
+  }
+})
+
 type CheckedEvent = {
   target: {
     value: string;
