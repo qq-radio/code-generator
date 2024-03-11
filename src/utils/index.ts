@@ -1,24 +1,40 @@
-import { parseStrings } from '@/composables/useJson'
+import { clone } from 'remeda'
 
-import axios from 'axios'
+export const parseJson = (obj: Record<string, any>): Record<string, any> => {
+  for (const key in obj) {
+    if (typeof obj[key] === 'string') {
+      obj[key] = JSON.parse(obj[key])
+    } else if (typeof obj[key] === 'object') {
+      parseJson(obj[key])
+    }
+  }
+  return obj
+}
 
-export const axiosFetch = async (option: any) => {
-  try {
-    const { yapiDomain, projectToken, interfaceId } = option
-    const url = `${yapiDomain}?token=${projectToken}&id=${interfaceId}`
-    const options = {
-      headers: {
-        'Content-type': 'application/json'
+export function getValueByPath<T>(originObj: T, path: string): any {
+  let obj: any = clone(originObj)
+  const keys = path.split('.')
+
+  for (const key of keys) {
+    if (!obj || typeof obj !== 'object' || !Object.prototype.hasOwnProperty.call(obj, key)) {
+      return undefined
+    }
+    obj = obj[key]
+  }
+
+  return obj
+}
+
+export function checkNotEmptyKeyValue(obj: Record<string, any>): boolean {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key]
+      if (value === null || value === undefined || value === '') {
+        return false
       }
     }
-    const { data } = await axios.get(url, options)
-
-    parseStrings(data)
-
-    return data
-  } catch (error) {
-    console.error(`获取接口：${error}`)
   }
+  return true
 }
 
 export function capitalizeFirstLetter(str: string) {

@@ -58,15 +58,16 @@
 </template>
 
 <script setup lang="ts">
-import { downloadJson } from '@/composables/useDownload'
+import { downloadJson } from '@/utils/download'
 import { globalConfig, codeConfigs } from '@/configs';
 import type { CodeType, Properties, DataSourceItem } from '@/types';
-import { axiosFetch, capitalizeFirstLetter } from '@/utils'
-import { getValueByPath, checkNotEmptyKeyValue } from '@/composables/useJson'
+import { axiosFetch } from '@/https'
+import { capitalizeFirstLetter } from '@/utils'
+import { getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue';
 import PreviewJsonModal from '@/components/PreviewJsonModal.vue';
-import PropertyPanel from './components/PropertyPanel.vue';
+import PropertyPanel from '@/components/PropertyPanel.vue';
 import { message } from 'ant-design-vue';
 
 const getCodeConfig = (codeType: CodeType) => codeConfigs.find(i => i.codeType === codeType)
@@ -220,11 +221,12 @@ const openPreviewJsonModal = () => {
  * download json
  */
 const downloadInterfaceData = async () => {
-  downloadJson(JSON.stringify(interfaceData.value), globalConfig.downloadFileName.interface)
+  console.log("downloadInterfaceData11",)
+  downloadJson(interfaceData.value, globalConfig.downloadFileName.interface)
 }
 
 const downloadSchemas = async () => {
-  downloadJson(JSON.stringify(getSchemas()), globalConfig.downloadFileName.schema)
+  downloadJson(getSchemas(), globalConfig.downloadFileName.schema)
 }
 </script>
 
