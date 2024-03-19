@@ -23,7 +23,11 @@ export default defineConfig({
         {
           '@vueuse/core': []
         }
-      ]
+      ],
+      eslintrc: {
+        enabled: true,
+        filepath: './.eslintrc-auto-import.json'
+      }
     }),
     VueDevTools()
   ],

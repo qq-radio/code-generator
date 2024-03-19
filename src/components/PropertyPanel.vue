@@ -1,7 +1,6 @@
 <template>
-  <div class="lg:flex md:block"
-       :class="{ 'fixed top-0 left-0 w-screen h-screen bg-white z-50 overflow-hidden py-6 px-12 !block': isFullScreen }">
-    <div class="lg:w-1/3 md:11/12" :class="{ 'ml-0 w-2/3': isFullScreen }">
+  <div class="md:block lg:flex" :class="{ 'fixed left-0 top-0 z-50 !block h-screen w-screen overflow-hidden bg-white px-12 py-6': isFullScreen }">
+    <div class="md:11/12 lg:w-1/3" :class="{ 'ml-0 w-2/3': isFullScreen }">
       <div class="mb-4">
         <a-button class="mr-4" type="primary" @click="toggleFullScreen">
           {{ isFullScreen ? 'Exit Fullscreen' : 'Enter Fullscreen' }}
@@ -9,22 +8,19 @@
         <a-checkbox v-if="propertyOptions?.length" @change="onAllCheckedChange">All Check</a-checkbox>
       </div>
       <a-checkbox-group v-model:value="checkedPropertyKeys">
-        <template v-for=" option in propertyOptions" :key="option.value">
+        <template v-for="option in propertyOptions" :key="option.value">
           <a-checkbox :value="option.value" @change="onCheckedChange">{{ option.label }}</a-checkbox>
         </template>
       </a-checkbox-group>
     </div>
-    <div class="flex py-6 overflow-x-scroll lg:w-2/3 md:11/12 md:ml-0" :class="{ '!ml-0 !w-[99%]': isFullScreen }">
+    <div class="md:11/12 flex overflow-x-scroll py-6 md:ml-0 lg:w-2/3" :class="{ '!ml-0 !w-[99%]': isFullScreen }">
       <div>
-        <div v-for="title in getDataSourceTitle" :key="title" class="element-row bg-slate-100">
-          {{ capitalizeFirstLetter(title) }}:
-        </div>
+        <div v-for="title in getDataSourceTitle" :key="title" class="element-row bg-slate-100">{{ capitalizeFirstLetter(title) }}:</div>
       </div>
-      <Draggable :group="props.propertyType" :list="getDataSourceArray" itemKey="field" animation="340"
-                 :style="{ display: 'flex' }" @update="onDragUpdate">
+      <Draggable :group="props.propertyType" :list="getDataSourceArray" itemKey="field" animation="340" :style="{ display: 'flex' }" @update="onDragUpdate">
         <template #item="{ element }">
           <div>
-            <div class="element-row" v-for="(column, columnIndex ) in element" :key="columnIndex">
+            <div class="element-row" v-for="(column, columnIndex) in element" :key="columnIndex">
               <a-textarea v-model:value="column.value" v-bind="column.componentProps" :rows="1" style="width: 100%" />
             </div>
           </div>
@@ -35,37 +31,37 @@
 </template>
 
 <script setup lang="ts">
-import type { PropertyType, Properties, SettingConfigItem, DataSourceItem } from '@/types';
+import type { PropertyType, Properties, SettingConfigItem, DataSourceItem } from '@/types'
 import { capitalizeFirstLetter } from '@/utils'
-import Draggable from "vuedraggable";
+import Draggable from 'vuedraggable'
 
 const props = defineProps({
   propertyType: { type: String as () => PropertyType, required: true },
   settingConfig: { type: Object as () => SettingConfigItem[], required: true },
-  properties: { type: Object as () => Properties },
-});
+  properties: { type: Object as () => Properties }
+})
 
 const isFullScreen = ref<boolean>(false)
 
 const toggleFullScreen = () => {
-  isFullScreen.value = !isFullScreen.value;
+  isFullScreen.value = !isFullScreen.value
 }
 
 type Option = {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 const mapPropertiesToOptions = () => {
   if (!(props.properties instanceof Object)) {
     return
   }
-  const options: Option[] = [];
+  const options: Option[] = []
   const keys = Object.keys(props.properties)
-  keys.forEach(key => {
+  keys.forEach((key) => {
     options.push({
       label: props.properties![key].description,
-      value: key,
-    });
+      value: key
+    })
   })
   return options
 }
@@ -76,9 +72,9 @@ const checkedPropertyKeys = ref<string[]>([])
 
 const dataSourceMap = ref<Map<string, DataSourceItem[]>>(new Map())
 
-const getDataSourceArray = computed<DataSourceItem[][]>(() => dataSourceMap.value?.size ? Array.from(dataSourceMap.value.values()) : []);
+const getDataSourceArray = computed<DataSourceItem[][]>(() => (dataSourceMap.value?.size ? Array.from(dataSourceMap.value.values()) : []))
 
-const getDataSourceTitle = computed<string[]>(() => getDataSourceArray.value[0]?.map(i => i.field) || []);
+const getDataSourceTitle = computed<string[]>(() => getDataSourceArray.value[0]?.map((i) => i.field) || [])
 
 const storageKey = `data-source-${props.propertyType}`
 
@@ -91,20 +87,20 @@ watch(
 )
 
 onMounted(() => {
-  const storedData = window.localStorage.getItem(storageKey);
+  const storedData = window.localStorage.getItem(storageKey)
   if (storedData) {
-    const values = JSON.parse(storedData);
-    dataSourceMap.value = new Map(values);
+    const values = JSON.parse(storedData)
+    dataSourceMap.value = new Map(values)
     checkedPropertyKeys.value = Array.from(dataSourceMap.value.keys())
   }
 })
 
 type CheckedEvent = {
   target: {
-    value: string;
-    checked: boolean;
+    value: string
+    checked: boolean
   }
-  [key: string]: any;
+  [key: string]: any
 }
 const onCheckedChange = (event: CheckedEvent) => {
   const { checked, value } = event.target
@@ -113,7 +109,7 @@ const onCheckedChange = (event: CheckedEvent) => {
       key: value,
       ...props.properties![value]
     }
-    const dataSourceItem = props.settingConfig.map(setting => ({
+    const dataSourceItem = props.settingConfig.map((setting) => ({
       ...setting,
       value: setting.defaultValueFromField && property[setting.defaultValueFromField]
     }))
@@ -125,15 +121,15 @@ const onCheckedChange = (event: CheckedEvent) => {
 
 type AllCheckedEvent = {
   target: {
-    checked: boolean;
+    checked: boolean
   }
-  [key: string]: any;
+  [key: string]: any
 }
 const onAllCheckedChange = (event: AllCheckedEvent) => {
   const { checked } = event.target
   if (checked) {
-    checkedPropertyKeys.value = propertyOptions.value!.map(i => i.value)
-    checkedPropertyKeys.value.forEach(key => {
+    checkedPropertyKeys.value = propertyOptions.value!.map((i) => i.value)
+    checkedPropertyKeys.value.forEach((key) => {
       onCheckedChange({ target: { checked, value: key } })
     })
   } else {
@@ -143,25 +139,25 @@ const onAllCheckedChange = (event: AllCheckedEvent) => {
 }
 
 type DragEvent = {
-  oldIndex: number;
-  newIndex: number;
-  [key: string]: any;
+  oldIndex: number
+  newIndex: number
+  [key: string]: any
 }
 const onDragUpdate = (event: DragEvent) => {
   const { oldIndex, newIndex } = event
-  const array = Array.from(dataSourceMap.value);
+  const array = Array.from(dataSourceMap.value)
   const oldItem = array[oldIndex]
-  array.splice(oldIndex, 1,);
-  array.splice(newIndex, 0, oldItem);
-  dataSourceMap.value = new Map(array);
+  array.splice(oldIndex, 1)
+  array.splice(newIndex, 0, oldItem)
+  dataSourceMap.value = new Map(array)
 }
 
 defineExpose({ getDataSourceArray })
 </script>
 
-<style lang='less' scoped>
+<style lang="less" scoped>
 .element-row {
-  @apply border border-solid border-slate-300 h-12 w-44 overflow-hidden p-2;
+  @apply h-12 w-44 overflow-hidden border border-solid border-slate-300 p-2;
 }
 
 /deep/ .ant-checkbox-wrapper {
@@ -169,10 +165,10 @@ defineExpose({ getDataSourceArray })
 
   span {
     display: inline-block;
-    white-space: nowrap;
+    max-width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 90%;
+    white-space: nowrap;
   }
 }
 </style>
