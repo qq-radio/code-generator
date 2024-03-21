@@ -1,6 +1,6 @@
 <template>
-  <div class="m-5 h-screen w-screen overflow-hidden p-2.5">
-    <a-collapse v-model:activeKey="activeKey">
+  <div class="m-5 h-screen w-screen overflow-y-auto overflow-x-hidden p-2.5">
+    <a-collapse v-model:activeKey="activeKey" class="w-11/12">
       <a-collapse-panel key="configure-panel" header="Configure panel">
         <a-form labelAlign="left" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
           <a-form-item v-for="(formItem, index) in formConfigs" :key="index" :label="formItem.label">
@@ -137,9 +137,11 @@ watch(
 )
 
 onMounted(() => {
-  const values = JSON.parse(window.localStorage.getItem(storageKey) || '')
-  formValues.value = values
-  fetchData()
+  const values = window.localStorage.getItem(storageKey)
+  if (values) {
+    formValues.value = JSON.parse(values)
+    fetchData()
+  }
 })
 
 const interfaceData = ref()

@@ -1,5 +1,5 @@
 <template>
-  <div class="m-10 border border-solid border-slate-300">
+  <div class="m-10 overflow-hidden border border-solid border-slate-300">
     <a-tabs v-model:activeKey="activeKey" type="card">
       <a-tab-pane v-for="tab in tabs" :key="tab.key" :tab="tab.key">
         <RouterView />
@@ -14,7 +14,7 @@ import { ref } from 'vue'
 
 const router = useRouter()
 
-const activeKey = ref<string>('husky-test')
+const activeKey = ref<string>('schema-generator')
 
 const tabs = ref([{ key: 'schema-generator' }, { key: 'husky-test' }])
 
