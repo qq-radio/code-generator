@@ -20,16 +20,43 @@ const config: Config = {
     },
     {
       field: 'component',
-      component: 'Input',
+      component: 'Select',
       componentProps: {
+        defaultValue: 'Input',
         options: [
           {
-            label: 'INPUT',
-            value: 'INPUT'
+            label: 'Input',
+            value: 'Input'
           },
           {
-            label: 'SELECT',
-            value: 'SELECT'
+            label: 'Select',
+            value: 'Select'
+          },
+          {
+            label: 'ChannelType',
+            value: 'ChannelType',
+            property: {
+              options: 'TODO',
+              fieldNames: {
+                label: 'channelName',
+                value: 'id'
+              }
+            }
+          },
+          {
+            label: 'Dept',
+            value: 'Dept',
+            property: {
+              treeData: 'TODO',
+              fieldNames: {
+                label: 'name',
+                value: 'orgId',
+                children: 'childOrgList'
+              },
+              placeholder: '请选择市场组织',
+              showSearch: true,
+              treeNodeFilterProp: 'name'
+            }
           }
         ]
       }

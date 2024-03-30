@@ -172,7 +172,21 @@ const getDataSourceValues = (array: DataSourceItem[]) => {
   return object
 }
 
-const requestDataSource = computed(() => requestPanelRef.value.getDataSourceArray.map(getDataSourceValues))
+const getSettingProperty = (schema: DataSourceItem) => {
+  if (schema.component !== 'Input') {
+    const property = codeConfig.value?.requestSettingConfig
+      ?.find((i) => i?.component === 'Select')
+      ?.componentProps?.options.find((j: any) => j.value === schema.component)?.property
+    return property ? { ...schema, componentProps: property } : schema
+  }
+  return schema
+}
+
+const requestDataSource = computed(() => {
+  let requestSchema = requestPanelRef.value.getDataSourceArray.map(getDataSourceValues)
+  requestSchema = requestSchema.map(getSettingProperty)
+  return requestSchema
+})
 const responseDataSource = computed(() => {
   return responsePanelRef.value.getDataSourceArray.map(getDataSourceValues)
 })

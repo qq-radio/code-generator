@@ -21,7 +21,12 @@
         <template #item="{ element }">
           <div>
             <div class="element-row" v-for="(column, columnIndex) in element" :key="columnIndex">
-              <a-textarea v-model:value="column.value" v-bind="column.componentProps" :rows="1" style="width: 100%" />
+              <template v-if="column.component === 'Input'">
+                <a-textarea v-model:value="column.value" v-bind="column.componentProps" :rows="1" style="width: 100%" />
+              </template>
+              <template v-if="column.component === 'Select'">
+                <a-select v-model:value="column.value" v-bind="column.componentProps" style="width: 100%" />
+              </template>
             </div>
           </div>
         </template>
@@ -111,7 +116,7 @@ const onCheckedChange = (event: CheckedEvent) => {
     }
     const dataSourceItem = props.settingConfig.map((setting) => ({
       ...setting,
-      value: setting.defaultValueFromField && property[setting.defaultValueFromField]
+      value: setting.component === 'Select' ? 'Input' : setting.defaultValueFromField && property[setting.defaultValueFromField]
     }))
     dataSourceMap.value.set(value, dataSourceItem)
   } else {

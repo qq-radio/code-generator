@@ -1,28 +1,11 @@
 import type { Config } from '@/types'
+import formConfig from './form'
 
 const config: Config = {
   codeType: 'TABLE',
   sort: 1,
   responsePropertyKeyPath: 'data.res_body.properties.data.properties.records.items.properties',
-  requestSettingConfig: [
-    {
-      field: 'label',
-      component: 'Input',
-      defaultValueFromField: 'description'
-    },
-    {
-      field: 'field',
-      component: 'Input',
-      componentProps: {
-        disabled: true
-      },
-      defaultValueFromField: 'key'
-    },
-    {
-      field: 'component',
-      component: 'Input'
-    }
-  ],
+  requestSettingConfig: formConfig.requestSettingConfig,
   responseSettingConfig: [
     {
       field: 'title',
