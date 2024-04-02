@@ -13,7 +13,6 @@ export type Properties = {
 
 export type GlobalConfig = {
   codeType: CodeType
-  yapiDomain: string
   projectToken: string
   interfaceId: string
   requestPropertyKeyPath: string
@@ -40,3 +39,18 @@ export type Config = {
 }
 
 export type DataSourceItem = SettingConfigItem & { value: string }
+
+export type FormItem = {
+  label: string
+  field: string
+  component?: string
+  componentProps?: object
+}
+
+export type Method = 'GET' | 'POST' | 'DELETE'
+
+export type ApiItem = {
+  title: string
+  method: Method
+  path: string
+}

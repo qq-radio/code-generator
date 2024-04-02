@@ -42,5 +42,17 @@ export function checkNotEmptyKeyValue(obj: Record<string, any>): boolean {
 }
 
 export function capitalizeFirstLetter(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+export function filterObjectByKey<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const filteredObj = {} as Pick<T, K>
+
+  keys.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      filteredObj[key] = obj[key]
+    }
+  })
+
+  return filteredObj
 }

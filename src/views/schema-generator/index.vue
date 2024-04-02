@@ -14,19 +14,19 @@
           </a-form-item>
         </a-form>
         <div>
-          <a-button type="primary" @click="fetchData">
+          <a-button class="mr-4" type="primary" @click="fetchData">
             <template #icon>
               <RightOutlined />
             </template>
             Send Request
           </a-button>
-          <a-button type="primary" @click="openPreviewJsonModal">
+          <a-button class="mr-4" type="primary" @click="openPreviewJsonModal">
             <template #icon>
               <EyeOutlined />
             </template>
             Preview JSON
           </a-button>
-          <a-button type="primary" @click="downloadInterfaceData">
+          <a-button class="mr-4" type="primary" @click="downloadInterfaceData">
             <template #icon>
               <DownloadOutlined />
             </template>
@@ -60,8 +60,8 @@ export default {
 import { downloadJson } from '@/utils/download'
 import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 import { codeConfigs } from '@/configs'
-import type { CodeType, Properties, DataSourceItem } from '@/types'
-import { axiosFetch } from '@/https'
+import type { CodeType, Properties, DataSourceItem, FormItem } from '@/types'
+import { yapiInterfaceGetApi } from '@/https/yapi'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
 import PreviewJsonModal from '@/components/PreviewJsonModal.vue'
 import PropertyPanel from '@/components/PropertyPanel.vue'
@@ -69,14 +69,7 @@ import { message } from 'ant-design-vue'
 
 const getCodeConfig = (codeType: CodeType) => codeConfigs.find((i) => i.codeType === codeType)
 
-const formConfigs = [
-  {
-    label: 'Please input yapi domain',
-    field: 'yapiDomain',
-    componentProps: {
-      disabled: true
-    }
-  },
+const formConfigs: FormItem[] = [
   {
     label: 'Please input project token',
     field: 'projectToken'
@@ -111,7 +104,6 @@ const activeKey = ref(['configure-panel', 'request-panel', 'response-panel'])
 
 type FetchConfig = {
   codeType: CodeType
-  yapiDomain: string
   projectToken: string
   interfaceId: string
   requestPropertyKeyPath: string
@@ -119,14 +111,13 @@ type FetchConfig = {
 }
 const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
   codeType: 'TABLE',
-  yapiDomain: 'yapiDomain',
   projectToken: '',
   interfaceId: '',
   requestPropertyKeyPath: 'data.req_body_other.properties',
   responsePropertyKeyPath: 'data.res_body.properties.data.properties.records.items.properties'
 })
 
-const storageKey = 'fetch-config'
+const storageKey = 'YAPI_INTERFACE_GET_CONFIG'
 
 watch(
   () => formValues.value,
@@ -152,7 +143,7 @@ const fetchData = async () => {
     message.warning('Please complete request fetch configure')
     return
   }
-  interfaceData.value = await axiosFetch(formValues.value)
+  interfaceData.value = await yapiInterfaceGetApi(formValues.value)
 }
 
 const cleanData = async () => {
@@ -251,26 +242,12 @@ const openPreviewJsonModal = () => {
 /**
  * download json
  */
-const downloadFileName = {
-  interface: 'interfaceData',
-  schema: 'schema'
-}
 
 const downloadInterfaceData = async () => {
-  downloadJson(interfaceData.value, downloadFileName.interface)
+  downloadJson('interface-data', interfaceData.value)
 }
 
 const downloadSchemas = async () => {
-  downloadJson(getSchemas(), downloadFileName.schema)
+  downloadJson('schema', getSchemas())
 }
 </script>
-
-<style lang="less" scoped>
-.ant-btn {
-  margin-right: 20px;
-}
-
-/deep/ .ant-collapse-header-text {
-  font-weight: 600;
-}
-</style>

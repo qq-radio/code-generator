@@ -1,6 +1,5 @@
-export function downloadJson(data: BlobPart, filename: string) {
-  const blobData = [JSON.stringify(data)]
-  const blob = new Blob(blobData, { type: 'application/json' })
+export function downloadFile(filename: string, data: any, type: string) {
+  const blob = new Blob([data], { type })
   const blobURL = window.URL.createObjectURL(blob)
 
   const downloadLink = document.createElement('a')
@@ -17,4 +16,12 @@ export function downloadJson(data: BlobPart, filename: string) {
 
   document.body.removeChild(downloadLink)
   window.URL.revokeObjectURL(blobURL)
+}
+
+export function downloadJson(filename: string, data: any) {
+  return downloadFile(filename, JSON.stringify(data), 'application/json')
+}
+
+export function downloadJavascript(filename: string, data: any) {
+  return downloadFile(filename, data, 'application/javascript')
 }

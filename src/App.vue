@@ -14,9 +14,9 @@ import { ref } from 'vue'
 
 const router = useRouter()
 
-const activeKey = ref<string>('schema-generator')
+const activeKey = ref<string>('api-generator')
 
-const tabs = ref([{ key: 'schema-generator' }, { key: 'husky-test' }])
+const tabs = ref([{ key: 'schema-generator' }, { key: 'api-generator' }, { key: 'husky-test' }])
 
 watch(
   () => activeKey.value,
@@ -27,6 +27,10 @@ watch(
 )
 </script>
 
-<style>
+<style lang="less" scoped>
 @import './assets/main.css';
+
+/deep/ .ant-collapse-header-text {
+  font-weight: 600;
+}
 </style>

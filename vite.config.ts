@@ -41,10 +41,10 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
-        '/yapiDomain': {
-          target: env.VITE_BASE_URL,
+        '/yapiServer': {
+          target: env.VITE_YAPI_BASE_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/yapiDomain/, '')
+          rewrite: (path) => path.replace(/^\/yapiServer/, '')
         }
       }
     }
