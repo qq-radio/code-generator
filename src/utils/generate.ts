@@ -10,7 +10,7 @@ function removePathVariable(path: string) {
 }
 
 function pathToName(path: string) {
-  return path.replace(/\/(\w+)\/(\w+)/, (_match, word1, word2) => {
+  return path.replace(/.*\/(\w+)\/(\w+)/, (_match, word1, word2) => {
     return `${word1}${capitalizeFirstLetter(word2)}`
   })
 }
@@ -19,7 +19,7 @@ function getPath(path: string) {
   return path.replace(/\{(\w+)\}/, '${' + '$1' + '}')
 }
 
-export function generateApiFile(apis: ApiItem[]) {
+export function generateApiFile(apis: ApiItem[], serviceName = 'todoService') {
   let content = ''
 
   apis.forEach((api) => {
@@ -38,7 +38,7 @@ export function generateApiFile(apis: ApiItem[]) {
     content += `// ${description} \n export const ${name}Api = ${requestKey} => request.${method}(\`${requestPath}\`,  ${requestKey}) \n\n`
   })
 
-  const outputFileContent = `import { todoService as request } from '@/services/service'; \n\n ${content}`
+  const outputFileContent = `import { ${serviceName} as request } from '@/services/service'; \n\n ${content}`
 
   return outputFileContent
 }

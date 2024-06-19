@@ -10,5 +10,16 @@
     {
       "path": "./tsconfig.vitest.json"
     }
-  ]
+  ],
+  "include": [
+    "./typed-router.d.ts",
+    "./types/components.d.ts"
+  ],
+  // ...
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "types": [
+      "unplugin-vue-router/client"
+    ]
+  }
 }

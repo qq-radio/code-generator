@@ -1,5 +1,7 @@
 export type CodeType = 'TABLE' | 'FORM' | 'DESCRIPTION'
 
+export type Framework = 'VBEN' | 'ANTD'
+
 export type PropertyType = 'REQUEST' | 'RESPONSE'
 
 export type PropertyValue = {
@@ -9,6 +11,10 @@ export type PropertyValue = {
 
 export type Properties = {
   [key: string]: PropertyValue
+}
+
+export type AnyObject = {
+  [key: string]: any
 }
 
 export type GlobalConfig = {
@@ -40,11 +46,15 @@ export type Config = {
 
 export type DataSourceItem = SettingConfigItem & { value: string }
 
+export type FormItemComponent = 'a-input' | 'a-select' | 'a-radio-group' | 'a-checkbox-group' | 'InterfaceTokenRadioGroup' | 'response-property-key-path'
+
 export type FormItem = {
   label: string
   field: string
   component?: string
-  componentProps?: object
+  componentProps?: {
+    disabled: boolean
+  } & AnyObject
 }
 
 export type Method = 'GET' | 'POST' | 'DELETE'
@@ -53,4 +63,17 @@ export type ApiItem = {
   title: string
   method: Method
   path: string
+}
+
+export type FormSchemaItem = {
+  label: string
+  field: string
+  component: string
+}
+
+export type TableSchemaItem = {
+  title: string
+  dataIndex: string
+  ifShow?: boolean
+  searchConfig?: FormSchemaItem
 }

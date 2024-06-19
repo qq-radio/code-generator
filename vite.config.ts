@@ -6,19 +6,23 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import VueDevTools from 'vite-plugin-vue-devtools'
-
+import VueRouter from 'unplugin-vue-router/vite'
+import Components from 'unplugin-vue-components/vite'
 const resolve = (dir: string) => path.join(__dirname, dir)
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
-
   return {
     plugins: [
+      Components({
+        dts: './types/components.d.ts'
+      }),
+      VueRouter({}),
       vue(),
       vueJsx(),
       AutoImport({
-        dts: resolve('./src/auto-imports.d.ts'),
+        dts: resolve('./types/auto-imports.d.ts'),
         imports: [
           'vue',
           'pinia',
@@ -45,6 +49,16 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_YAPI_BASE_URL,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/yapiServer/, '')
+        },
+        '/adminServer': {
+          target: env.VITE_ADMIN_DEV_BASE_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/adminServer/, '')
+        },
+        '/adminServerTest': {
+          target: env.VITE_ADMIN_TEST_BASE_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/adminServerTest/, '')
         }
       }
     }

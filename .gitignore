@@ -29,3 +29,11 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# Private files
+interface-token.json
+
+
+#Types
+components.d.ts
+auto-imports.d.ts

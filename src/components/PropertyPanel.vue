@@ -27,6 +27,9 @@
               <template v-if="column.component === 'Select'">
                 <a-select v-model:value="column.value" v-bind="column.componentProps" style="width: 100%" />
               </template>
+              <template v-if="column.component === 'Checkbox'">
+                <a-checkbox v-model:checked="column.value">必填</a-checkbox>
+              </template>
             </div>
           </div>
         </template>

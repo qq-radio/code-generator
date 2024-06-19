@@ -1,5 +1,13 @@
+<route lang="json">
+{
+  "meta": {
+    "sort": 6
+  }
+}
+</route>
+
 <template>
-  <div class="dddd" @click="clickhusky">husky</div>
+  <div class="dddd" @click="clickhusky">husky{{ a }}</div>
   <div @click="clickhusky">husky</div>
 </template>
 
@@ -12,7 +20,6 @@ export default {
 const a = ref({
   b: 'bbbb'
 })
-console.log({ a })
 const clickhusky = () => {}
 </script>
 

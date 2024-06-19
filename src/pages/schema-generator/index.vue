@@ -1,16 +1,18 @@
+<route lang="json">
+{
+  "meta": {
+    "sort": 1
+  }
+}
+</route>
+
 <template>
   <div class="m-5 h-screen w-screen overflow-y-auto overflow-x-hidden p-2.5">
     <a-collapse v-model:activeKey="activeKey" class="w-11/12">
       <a-collapse-panel key="configure-panel" header="Configure panel">
         <a-form labelAlign="left" :label-col="{ span: 4 }" :wrapper-col="{ span: 10 }">
           <a-form-item v-for="(formItem, index) in formConfigs" :key="index" :label="formItem.label">
-            <template v-if="formItem.component === 'a-radio-group'">
-              <a-radio-group v-model:value="formValues[formItem.field]" v-bind="formItem.componentProps" />
-            </template>
-
-            <template v-else>
-              <a-input v-model:value="formValues[formItem.field]" v-bind="formItem.componentProps" />
-            </template>
+            <FormItem v-model="formValues[formItem.field]" :formItem="formItem" />
           </a-form-item>
         </a-form>
         <div>
@@ -20,12 +22,32 @@
             </template>
             Send Request
           </a-button>
-          <a-button class="mr-4" type="primary" @click="openPreviewJsonModal">
+          <a-divider />
+          <a-button class="mr-4 bg-green-500" type="primary" @click="previewJson('INTERFACE')">
             <template #icon>
               <EyeOutlined />
             </template>
-            Preview JSON
+            Preview Interface JSON
           </a-button>
+          <a-button class="mr-4 bg-green-500" type="primary" @click="previewJson('REQUEST')">
+            <template #icon>
+              <EyeOutlined />
+            </template>
+            Preview Request JSON
+          </a-button>
+          <a-button class="mr-4 bg-green-500" type="primary" @click="previewJson('RESPONSE')">
+            <template #icon>
+              <EyeOutlined />
+            </template>
+            Preview Response JSON
+          </a-button>
+          <a-button class="mr-4 bg-green-500" type="primary" @click="previewJson('SCHEMA')">
+            <template #icon>
+              <EyeOutlined />
+            </template>
+            Preview Schema JSON
+          </a-button>
+          <a-divider />
           <a-button class="mr-4" type="primary" @click="downloadInterfaceData">
             <template #icon>
               <DownloadOutlined />
@@ -60,31 +82,31 @@ export default {
 import { downloadJson } from '@/utils/download'
 import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 import { codeConfigs } from '@/configs'
-import type { CodeType, Properties, DataSourceItem, FormItem } from '@/types'
+import type { Framework, CodeType, Properties, DataSourceItem, FormItem, TableSchemaItem, FormSchemaItem } from '@/types'
+import { formatAntdTableSchemas, formatAntdFormSchemas } from './_/format-schema'
 import { yapiInterfaceGetApi } from '@/https/yapi'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
-import PreviewJsonModal from '@/components/PreviewJsonModal.vue'
-import PropertyPanel from '@/components/PropertyPanel.vue'
 import { message } from 'ant-design-vue'
 
 const getCodeConfig = (codeType: CodeType) => codeConfigs.find((i) => i.codeType === codeType)
 
 const formConfigs: FormItem[] = [
   {
-    label: 'Please input project token',
-    field: 'projectToken'
-  },
-  {
-    label: 'Please input interface id',
-    field: 'interfaceId'
-  },
-  {
-    label: 'Please input request property keyPath',
-    field: 'requestPropertyKeyPath'
-  },
-  {
-    label: 'Please input response property keyPath',
-    field: 'responsePropertyKeyPath'
+    label: 'Please select framework you use',
+    field: 'framework',
+    component: 'a-radio-group',
+    componentProps: {
+      options: [
+        {
+          label: 'Vben',
+          value: 'VBEN'
+        },
+        {
+          label: 'Antd Admin',
+          value: 'ANTD'
+        }
+      ]
+    }
   },
   {
     label: 'Please choose code type',
@@ -97,12 +119,30 @@ const formConfigs: FormItem[] = [
         fetchData()
       }
     }
+  },
+  {
+    label: 'Please input project token',
+    field: 'projectToken',
+    component: 'InterfaceTokenRadioGroup'
+  },
+  {
+    label: 'Please input interface id',
+    field: 'interfaceId'
+  },
+  {
+    label: 'Please input request property keyPath',
+    field: 'requestPropertyKeyPath'
+  },
+  {
+    label: 'Please input response property keyPath',
+    field: 'responsePropertyKeyPath'
   }
 ]
 
-const activeKey = ref(['configure-panel', 'request-panel', 'response-panel'])
+const activeKey = ref(['configure-panel', 'request-panel'])
 
 type FetchConfig = {
+  framework: Framework
   codeType: CodeType
   projectToken: string
   interfaceId: string
@@ -110,6 +150,7 @@ type FetchConfig = {
   responsePropertyKeyPath: string
 }
 const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
+  framework: 'ANTD',
   codeType: 'TABLE',
   projectToken: '',
   interfaceId: '',
@@ -178,9 +219,15 @@ const requestDataSource = computed(() => {
   requestSchema = requestSchema.map(getSettingProperty)
   return requestSchema
 })
-const responseDataSource = computed(() => {
-  return responsePanelRef.value.getDataSourceArray.map(getDataSourceValues)
-})
+
+const responseDataSource = computed(() => responsePanelRef.value.getDataSourceArray.map(getDataSourceValues))
+
+const formatTableSchemas = (columns: TableSchemaItem[]) => {
+  if (formValues.value.framework === 'ANTD') {
+    return formatAntdTableSchemas(columns)
+  }
+  return columns
+}
 
 const getTableSchemas = () => {
   const columns = [...responseDataSource.value]
@@ -197,14 +244,21 @@ const getTableSchemas = () => {
         ifShow: false,
         searchConfig: { ...item }
       }
-      columns.push(columnItem)
+      columns.unshift(columnItem)
     }
+  }
+  return formatTableSchemas(columns)
+}
+
+const formatFormSchemas = (columns: FormSchemaItem[]) => {
+  if (formValues.value.framework === 'ANTD') {
+    return formatAntdFormSchemas(columns)
   }
   return columns
 }
 
 const getFormSchemas = () => {
-  return requestDataSource.value
+  return formatFormSchemas(requestDataSource.value)
 }
 
 const getDescriptionSchemas = () => {
@@ -232,17 +286,33 @@ const getSchemas = () => {
 /**
  * preview json
  */
+type JsonType = 'INTERFACE' | 'REQUEST' | 'RESPONSE' | 'SCHEMA'
 const isPreviewJsonModalVisible = ref(false)
 const previewJsonParams = ref()
-const openPreviewJsonModal = () => {
-  previewJsonParams.value = getSchemas()
+
+const previewJson = (jsonType: JsonType) => {
+  switch (jsonType) {
+    case 'INTERFACE':
+      previewJsonParams.value = interfaceData.value
+      break
+    case 'REQUEST':
+      previewJsonParams.value = requestProperties.value
+      break
+    case 'RESPONSE':
+      previewJsonParams.value = responseProperties.value
+      break
+    case 'SCHEMA':
+      previewJsonParams.value = getSchemas()
+      break
+    default:
+      break
+  }
   isPreviewJsonModalVisible.value = true
 }
 
 /**
  * download json
  */
-
 const downloadInterfaceData = async () => {
   downloadJson('interface-data', interfaceData.value)
 }

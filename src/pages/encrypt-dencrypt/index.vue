@@ -1,3 +1,11 @@
+<route lang="json">
+{
+  "meta": {
+    "sort": 5
+  }
+}
+</route>
+
 <template>
   <div class="m-5 h-screen w-screen overflow-y-auto overflow-x-hidden p-2.5">
     <a-collapse v-model:activeKey="activeKey" class="w-11/12">
@@ -7,26 +15,8 @@
             <a-input v-model:value="formValues[formItem.field]" v-bind="formItem.componentProps" />
           </a-form-item>
         </a-form>
-        <div>
-          <a-button class="mr-4" type="primary" @click="fetchData">
-            <template #icon>
-              <RightOutlined />
-            </template>
-            Send Request
-          </a-button>
-          <a-button class="mr-4" type="primary" @click="downloadInterfaceData">
-            <template #icon>
-              <DownloadOutlined />
-            </template>
-            Download Interface Data
-          </a-button>
-          <a-button type="primary" @click="downloadApis">
-            <template #icon>
-              <DownloadOutlined />
-            </template>
-            Download Apis
-          </a-button>
-        </div>
+        <div>加密后的门店编码 {{ result }}</div>
+        <div>快速生成二维码参数 {{ qrcode }}</div>
       </a-collapse-panel>
       <a-collapse-panel key="response-panel" header="Request panel">wait</a-collapse-panel>
     </a-collapse>
@@ -40,34 +30,55 @@ export default {
 </script>
 <script setup lang="ts">
 import { generateApiFile } from '@/utils/generate'
-import { downloadJson, downloadJavascript } from '@/utils/download'
+import { downloadJavascript } from '@/utils/download'
 import { checkNotEmptyKeyValue, filterObjectByKey } from '@/utils'
 import type { FormItem, ApiItem } from '@/types'
 import { yapiInterfaceListApi } from '@/https/yapi'
 import { DownloadOutlined, RightOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { AES, enc, pad, mode } from 'crypto-js'
+
+const result = ref('')
+
+const qrcode = computed(() =>
+  result.value
+    ? `https://uat-by-gw.bygf.top?type=redirect&params={"storeNumber":"${result.value}","storeOpenId":"7f10ceefa3069f41093344cb31da901f9e7ed5e11341dd1ac1bf22a8758e39e0","met":"ad61a7798da664f0822b4c3e3e783eed0124ed34400dcc8cabc31cd0212d1ebb","__page":"/pages/store-return-request/index"}`
+    : ''
+)
+
+const aesEncryptText = () => {
+  const message = formValues.value.message
+  if (!message || typeof message !== 'string') return ''
+  const key = enc.Base64.parse('aEsva0zDHECg47P8SuPzmw==')
+
+  result.value = AES.encrypt(message, key, {
+    mode: mode.ECB,
+    padding: pad.Pkcs7
+  }).ciphertext.toString()
+}
 
 const formConfigs: FormItem[] = [
   {
-    label: 'Please input project token',
-    field: 'projectToken'
-  },
-  {
-    label: 'Please input cat id',
-    field: 'catId'
+    label: 'Please input message',
+    field: 'message',
+    componentProps: {
+      onChange: () => {
+        aesEncryptText()
+      }
+    }
   }
 ]
 
 const activeKey = ref(['configure-panel', 'response-panel'])
 
 type FetchConfig = {
-  projectToken: string
-  catId: string
+  key: string
+  message: string
   [key: string]: string
 }
 const formValues: Ref<FetchConfig> = ref({
-  projectToken: '',
-  catId: ''
+  key: '',
+  message: ''
 })
 
 const storageKey = 'YAPI_INTERFACE_LIST_CONFIG'
@@ -82,31 +93,10 @@ watch(
 
 const interfaceData = ref()
 
-const fetchData = async () => {
-  const isValid = checkNotEmptyKeyValue(formValues.value)
-  if (!isValid) {
-    message.warning('Please complete request fetch configure')
-    return
-  }
-  interfaceData.value = await yapiInterfaceListApi(formValues.value)
-}
-
-onMounted(() => {
-  const values = window.localStorage.getItem(storageKey)
-  if (values) {
-    formValues.value = JSON.parse(values)
-    fetchData()
-  }
-})
-
 type Lists = Array<ApiItem & { [key: string]: string }>
 const lists = computed<Lists>(() => interfaceData.value.data.list.map((item: any) => filterObjectByKey(item, ['title', 'method', 'path'])))
 
 const apis = computed(() => generateApiFile(lists.value))
-
-const downloadInterfaceData = async () => {
-  downloadJson('interface-data', interfaceData.value)
-}
 
 const downloadApis = async () => {
   downloadJavascript('apis', apis.value)

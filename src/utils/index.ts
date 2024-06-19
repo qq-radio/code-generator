@@ -56,3 +56,34 @@ export function filterObjectByKey<T extends Record<string, any>, K extends keyof
 
   return filteredObj
 }
+
+export function excludeObjectUndefinedProps(obj: any) {
+  const filteredObj = {} as any
+  const keys = Object.keys(obj)
+  keys.forEach((key) => {
+    if (obj[key]) {
+      filteredObj[key] = obj[key]
+    }
+  })
+
+  return filteredObj
+}
+
+type tY = { [key: string]: string }
+export function mapObjectFields(obj: tY, fieldPairs: tY) {
+  const newObj = { ...obj }
+
+  for (const [newKey, originalKey] of Object.entries(fieldPairs)) {
+    newObj[newKey] = obj[originalKey]
+  }
+
+  return newObj
+}
+
+export function mapObjectArrayFields(array: tY[], fieldPairs: tY) {
+  if (!Array.isArray(array) || !Object.keys(fieldPairs).length) {
+    return array
+  }
+
+  return array.map((item) => mapObjectFields(item, fieldPairs))
+}
