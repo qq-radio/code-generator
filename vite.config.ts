@@ -15,14 +15,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   return {
     plugins: [
-      Components({
-        dts: './types/components.d.ts'
-      }),
+      Components({}),
       VueRouter({}),
       vue(),
       vueJsx(),
       AutoImport({
-        dts: resolve('./types/auto-imports.d.ts'),
+        dts: resolve('./src/types/auto-imports.d.ts'),
         imports: [
           'vue',
           'pinia',

@@ -9,17 +9,28 @@ function removePathVariable(path: string) {
   return path.replace(/\/{[^}]+}/g, '')
 }
 
-function pathToName(path: string) {
+function pathToNameByTwoWord(path: string) {
   return path.replace(/.*\/(\w+)\/(\w+)/, (_match, word1, word2) => {
     return `${word1}${capitalizeFirstLetter(word2)}`
   })
+}
+
+function pathToNameByOneWord(path: string) {
+  return path.replace(/.*\/(\w+)\/(\w+)/, (_match, word1, word2) => {
+    console.log('word1:', word1)
+    return word2
+  })
+}
+
+function pathToName(params, number) {
+  return number === 1 ? pathToNameByOneWord(params, number) : pathToNameByTwoWord(params, number)
 }
 
 function getPath(path: string) {
   return path.replace(/\{(\w+)\}/, '${' + '$1' + '}')
 }
 
-export function generateApiFile(apis: ApiItem[], serviceName = 'todoService') {
+export function generateApiFile(apis: ApiItem[], serviceName = 'todoService', wordNumber = 1) {
   let content = ''
 
   apis.forEach((api) => {
@@ -27,7 +38,7 @@ export function generateApiFile(apis: ApiItem[], serviceName = 'todoService') {
 
     const description = api.title
 
-    const name = hasPathVariable ? pathToName(removePathVariable(api.path)) : pathToName(api.path)
+    const name = hasPathVariable ? pathToName(removePathVariable(api.path), wordNumber) : pathToName(api.path, wordNumber)
 
     const requestKey = hasPathVariable ? 'id' : 'data'
 
