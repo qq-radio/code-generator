@@ -18,6 +18,8 @@ function getAntdType(component: string) {
       return 'text'
     case 'Select':
       return 'select'
+    case 'InputNumber':
+      return 'input-number'
     default:
       break
   }
@@ -64,6 +66,8 @@ function getAntdComponent(component: string) {
       return 'input'
     case 'Select':
       return 'select'
+    case 'InputNumber':
+      return 'input-number'
     default:
       break
   }

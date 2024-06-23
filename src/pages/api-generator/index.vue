@@ -42,7 +42,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { generateApiFile } from '@/utils/generate'
+import { generateApiFile, generateApiFileNew } from '@/utils/generate'
 import { downloadJavascript } from '@/utils/download'
 import { checkNotEmptyKeyValue, filterObjectByKey } from '@/utils'
 import type { FormItem, ApiItem } from '@/types'
@@ -64,6 +64,23 @@ const formConfigs: FormItem[] = [
   {
     label: 'Do you want to naming your service name',
     field: 'serviceName'
+  },
+  {
+    label: 'Old version or New version',
+    field: 'isNew',
+    component: 'a-radio-group',
+    componentProps: {
+      options: [
+        {
+          label: 'Old',
+          value: 0
+        },
+        {
+          label: 'New',
+          value: 1
+        }
+      ]
+    }
   }
 ]
 
@@ -113,7 +130,8 @@ onMounted(() => {
 type Lists = Array<ApiItem & { [key: string]: string }>
 const lists = computed<Lists>(() => interfaceData.value.data.list.map((item: any) => filterObjectByKey(item, ['title', 'method', 'path'])))
 
-const apis = computed(() => generateApiFile(lists.value))
+// 以前用generateApiFile，现在用generateApiFileNew
+const apis = computed(() => generateApiFileNew(lists.value))
 
 const downloadApis = () => {
   downloadJavascript('apis', apis.value)
@@ -123,7 +141,7 @@ const isModalVisible = ref(false)
 const code = ref()
 
 const previewJavaScript = async () => {
-  code.value = generateApiFile(lists.value, formValues.value.serviceName)
+  code.value = generateApiFileNew(lists.value, formValues.value.serviceName)
   isModalVisible.value = true
 }
 </script>

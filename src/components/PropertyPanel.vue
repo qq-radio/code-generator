@@ -46,7 +46,13 @@ import Draggable from 'vuedraggable'
 const props = defineProps({
   propertyType: { type: String as () => PropertyType, required: true },
   settingConfig: { type: Object as () => SettingConfigItem[], required: true },
-  properties: { type: Object as () => Properties }
+  properties: { type: Object as () => Properties },
+  reqQuery: {
+    type: Array<{
+      name: string
+      desc: string
+    }>
+  }
 })
 
 const isFullScreen = ref<boolean>(false)
@@ -60,6 +66,16 @@ type Option = {
   value: string
 }
 const mapPropertiesToOptions = () => {
+  // 兼容新的写法
+  if (props.reqQuery?.length) {
+    return props.reqQuery.map((query) => {
+      return {
+        label: query.desc,
+        value: query.name
+      }
+    })
+  }
+
   if (!(props.properties instanceof Object)) {
     return
   }

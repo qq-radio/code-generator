@@ -29,6 +29,10 @@ const config: Config = {
             value: 'Input'
           },
           {
+            label: 'InputNumber',
+            value: 'InputNumber'
+          },
+          {
             label: 'Select',
             value: 'Select'
           },

@@ -63,7 +63,12 @@
         </div>
       </a-collapse-panel>
       <a-collapse-panel v-if="codeConfig?.requestSettingConfig" key="request-panel" header="Request panel">
-        <PropertyPanel ref="requestPanelRef" propertyType="REQUEST" :settingConfig="codeConfig.requestSettingConfig" :properties="requestProperties" />
+        <PropertyPanel
+          ref="requestPanelRef"
+          propertyType="REQUEST"
+          :settingConfig="codeConfig.requestSettingConfig"
+          :properties="isFormReqQuery ? reqQueryProperties : requestProperties"
+        />
       </a-collapse-panel>
       <a-collapse-panel v-if="codeConfig?.responseSettingConfig" key="response-panel" header="Response panel">
         <PropertyPanel ref="responsePanelRef" propertyType="RESPONSE" :settingConfig="codeConfig.responseSettingConfig" :properties="responseProperties" />
@@ -86,7 +91,7 @@ import type { Framework, CodeType, Properties, DataSourceItem, FormItem, TableSc
 import { formatAntdTableSchemas, formatAntdFormSchemas } from './_/format-schema'
 import { yapiInterfaceGetApi } from '@/https/yapi'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import { Descriptions, message } from 'ant-design-vue'
 
 const getCodeConfig = (codeType: CodeType) => codeConfigs.find((i) => i.codeType === codeType)
 
@@ -139,7 +144,7 @@ const formConfigs: FormItem[] = [
   }
 ]
 
-const activeKey = ref(['configure-panel', 'request-panel'])
+const activeKey = ref(['configure-panel', 'request-panel', 'response-panel'])
 
 type FetchConfig = {
   framework: Framework
@@ -155,6 +160,7 @@ const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
   projectToken: '',
   interfaceId: '',
   requestPropertyKeyPath: 'data.req_body_other.properties',
+  // requestPropertyKeyPath: 'data.req_query',
   responsePropertyKeyPath: 'data.res_body.properties.data.properties.records.items.properties'
 })
 
@@ -193,6 +199,24 @@ const cleanData = async () => {
 
 const codeConfig = computed(() => getCodeConfig(formValues.value.codeType))
 const requestProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath))
+const reqQuery = computed<
+  Array<{
+    name: string
+    desc: string
+  }>
+>(() => getValueByPath(interfaceData.value, 'data.req_query'))
+// 兼容新写法，从req_query来
+const isFormReqQuery = computed(() => formValues.value.requestPropertyKeyPath === 'data.req_query')
+const reqQueryProperties = computed(() => {
+  const obj = {}
+  reqQuery.value?.forEach((item) => {
+    obj[item.name] = {
+      type: '',
+      description: item.desc
+    }
+  })
+  return obj
+})
 const responseProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.responsePropertyKeyPath))
 
 const requestPanelRef = ref()
@@ -224,10 +248,22 @@ const responseDataSource = computed(() => responsePanelRef.value.getDataSourceAr
 
 const formatTableSchemas = (columns: TableSchemaItem[]) => {
   if (formValues.value.framework === 'ANTD') {
-    return formatAntdTableSchemas(columns)
+    const columnsvalue = formatAntdTableSchemas(columns)
+    if (needAction.value) {
+      columnsvalue.push({
+        title: '操作',
+        dataIndex: 'actions',
+        scopedSlots: { customRender: 'actions' },
+        fixed: 'right',
+        width: 120
+      })
+    }
+    return columnsvalue
   }
   return columns
 }
+
+const needAction = ref(true)
 
 const getTableSchemas = () => {
   const columns = [...responseDataSource.value]
@@ -247,6 +283,7 @@ const getTableSchemas = () => {
       columns.unshift(columnItem)
     }
   }
+
   return formatTableSchemas(columns)
 }
 
@@ -303,6 +340,7 @@ const previewJson = (jsonType: JsonType) => {
       break
     case 'SCHEMA':
       previewJsonParams.value = getSchemas()
+      console.log('🚀 ~ previewJson ~ previewJsonParams.value:', previewJsonParams.value)
       break
     default:
       break

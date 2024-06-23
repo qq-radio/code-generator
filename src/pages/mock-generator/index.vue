@@ -1,10 +1,8 @@
-<route lang="json">
-{
+<route lang="json">{
   "meta": {
     "sort": 3
   }
-}
-</route>
+}</route>
 
 <template>
   <div class="m-5 h-screen w-screen overflow-y-auto overflow-x-hidden p-2.5">
