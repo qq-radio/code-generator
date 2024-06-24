@@ -68,6 +68,8 @@ function getAntdComponent(component: string) {
       return 'select'
     case 'InputNumber':
       return 'input-number'
+    case 'Textarea':
+      return 'textarea'
     default:
       break
   }

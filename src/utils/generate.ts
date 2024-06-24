@@ -54,14 +54,8 @@ export function generateApiFile(apis: ApiItem[], serviceName = 'todoService', wo
   return outputFileContent
 }
 
-
-export function generateApiFileNew(apis: ApiItem[],  options ) {
-
-  const {
-    serviceName = 'todoService',
-    serviceUrl  =  '/pm-piecesalary-start/pieceProdLinePrice',
-    wordNumber = 1
-  }  = options 
+export function generateApiFileNew(apis: ApiItem[], options) {
+  const { serviceName = 'todoService', serviceUrl = 'todoServiceUrl', wordNumber = 1 } = options
 
   let content = ''
 
@@ -78,10 +72,14 @@ export function generateApiFileNew(apis: ApiItem[],  options ) {
 
     // 这是以前
     // const requestPath = getPath(api.path)
-// 这是现在，拿取最后一个单词
-    const requestPath = api.path.substring( api.path.lastIndexOf( '/'))
+    // 这是现在，拿取最后一个单词
+    const requestPath = api.path.substring(api.path.lastIndexOf('/'))
 
-    content += `// ${description} \n export const ${name}Api = ${requestKey} => axios.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKey}) \n\n`
+    if (api.path.includes('import') || api.path.includes('export')) {
+      content += `// ${description} \n export const ${name}Url = \`\${BASE_SERVICE_URL}${requestPath}\`\n\n`
+    } else {
+      content += `// ${description} \n export const ${name}Api = ${requestKey} => axios.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKey}) \n\n`
+    }
   })
 
   const base = `const BASE_SERVICE_URL = '${serviceUrl}'\n\n`

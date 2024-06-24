@@ -66,6 +66,14 @@ const formConfigs: FormItem[] = [
     field: 'serviceName'
   },
   {
+    label: 'Please input service url',
+    field: 'serviceUrl'
+  },
+  {
+    label: 'Number of word',
+    field: 'wordNumber'
+  },
+  {
     label: 'Old version or New version',
     field: 'isNew',
     component: 'a-radio-group',
@@ -95,7 +103,9 @@ type FetchConfig = {
 const formValues: Ref<FetchConfig> = ref({
   projectToken: '',
   catId: '',
-  serviceName: 'todoService'
+  serviceName: 'todoService',
+  serviceUrl: 'todoService',
+  wordNumber: 'todoService'
 })
 
 const storageKey = 'YAPI_INTERFACE_LIST_CONFIG'
@@ -131,7 +141,13 @@ type Lists = Array<ApiItem & { [key: string]: string }>
 const lists = computed<Lists>(() => interfaceData.value.data.list.map((item: any) => filterObjectByKey(item, ['title', 'method', 'path'])))
 
 // 以前用generateApiFile，现在用generateApiFileNew
-const apis = computed(() => generateApiFileNew(lists.value))
+const apis = computed(() =>
+  generateApiFileNew(lists.value, {
+    serviceName: 'axios',
+    serviceUrl: formValues.value.serviceUrl,
+    wordNumber: formValues.value.wordNumber
+  })
+)
 
 const downloadApis = () => {
   downloadJavascript('apis', apis.value)
@@ -141,7 +157,11 @@ const isModalVisible = ref(false)
 const code = ref()
 
 const previewJavaScript = async () => {
-  code.value = generateApiFileNew(lists.value, formValues.value.serviceName)
+  code.value = generateApiFileNew(lists.value, {
+    serviceName: 'axios',
+    serviceUrl: formValues.value.serviceUrl,
+    wordNumber: Number(formValues.value.wordNumber)
+  })
   isModalVisible.value = true
 }
 </script>

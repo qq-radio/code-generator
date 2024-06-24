@@ -33,6 +33,10 @@ const config: Config = {
             value: 'InputNumber'
           },
           {
+            label: 'Textarea',
+            value: 'Textarea'
+          },
+          {
             label: 'Select',
             value: 'Select'
           },

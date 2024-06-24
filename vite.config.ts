@@ -42,6 +42,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
+      port: '5000',
       proxy: {
         '/yapiServer': {
           target: env.VITE_YAPI_BASE_URL,
