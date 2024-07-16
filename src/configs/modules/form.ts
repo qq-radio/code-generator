@@ -22,49 +22,78 @@ const config: Config = {
       field: 'component',
       component: 'Select',
       componentProps: {
-        defaultValue: 'Input',
         options: [
           {
-            label: 'Input',
-            value: 'Input'
+            label: 'input',
+            value: 'input'
           },
           {
-            label: 'InputNumber',
-            value: 'InputNumber'
+            label: 'input-number',
+            value: 'input-number'
           },
           {
-            label: 'Textarea',
-            value: 'Textarea'
+            label: 'textarea',
+            value: 'textarea'
           },
           {
-            label: 'Select',
-            value: 'Select'
+            label: 'select',
+            value: 'select'
           },
           {
-            label: 'ChannelType',
-            value: 'ChannelType',
-            property: {
-              options: 'TODO',
-              fieldNames: {
-                label: 'channelName',
-                value: 'id'
-              }
-            }
+            label: 'date-picker',
+            value: 'date-picker'
           },
           {
-            label: 'Dept',
-            value: 'Dept',
-            property: {
-              treeData: 'TODO',
-              fieldNames: {
-                label: 'name',
-                value: 'orgId',
-                children: 'childOrgList'
-              },
-              placeholder: '请选择市场组织',
-              showSearch: true,
-              treeNodeFilterProp: 'name'
-            }
+            label: 'time-picker',
+            value: 'time-picker'
+          }
+          // 这个我用不到只是想说之前我预留了这个样的功能，啊 我很快就要看不懂自己写的什么代码了啊 啊
+          // {
+          //   label: 'ChannelType',
+          //   value: 'ChannelType',
+          //   property: {
+          //     options: 'TODO',
+          //     fieldNames: {
+          //       label: 'channelName',
+          //       value: 'id'
+          //     }
+          //   }
+          // },
+        ]
+      }
+    },
+    {
+      field: 'type',
+      component: 'Select',
+      componentProps: {
+        options: [
+          {
+            label: 'base-select',
+            value: 'base-select'
+          },
+          {
+            label: 'change-type-select',
+            value: 'change-type-select'
+          },
+          {
+            label: 'forklift-driver-type-select',
+            value: 'forklift-driver-type-select'
+          },
+          {
+            label: 'gyl-dept-tree-select',
+            value: 'gyl-dept-tree-select'
+          },
+          {
+            label: 'prod-line-select',
+            value: 'prod-line-select'
+          },
+          {
+            label: 'shift-select',
+            value: 'shift-select'
+          },
+          {
+            label: 'storage-type-select',
+            value: 'storage-type-select'
           }
         ]
       }

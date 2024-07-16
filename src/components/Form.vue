@@ -32,7 +32,6 @@ const formValues: Ref<FormValues | undefined> = ref({})
 
 const getComponent = (formItem) => {
   const component = formItem?.component || 'a-input'
-  console.log('component:1', component)
   switch (component) {
     case 'a-input':
       return Input

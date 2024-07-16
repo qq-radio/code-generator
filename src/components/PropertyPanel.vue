@@ -13,7 +13,7 @@
         </template>
       </a-checkbox-group>
     </div>
-    <div class="md:11/12 flex overflow-x-scroll py-6 md:ml-0 lg:w-2/3" :class="{ '!ml-0 !w-[99%]': isFullScreen }">
+    <div class="flex py-6 overflow-x-scroll md:11/12 md:ml-0 lg:w-2/3" :class="{ '!ml-0 !w-[99%]': isFullScreen }">
       <div>
         <div v-for="title in getDataSourceTitle" :key="title" class="element-row bg-slate-100">{{ capitalizeFirstLetter(title) }}:</div>
       </div>
@@ -25,7 +25,7 @@
                 <a-textarea v-model:value="column.value" v-bind="column.componentProps" :rows="1" style="width: 100%" />
               </template>
               <template v-if="column.component === 'Select'">
-                <a-select v-model:value="column.value" v-bind="column.componentProps" style="width: 100%" />
+                <a-select v-model:value="column.value" v-bind="column.componentProps" style="width: 100%" allowClear />
               </template>
               <template v-if="column.component === 'Checkbox'">
                 <a-checkbox v-model:checked="column.value">必填</a-checkbox>
@@ -176,7 +176,12 @@ const onDragUpdate = (event: DragEvent) => {
   dataSourceMap.value = new Map(array)
 }
 
-defineExpose({ getDataSourceArray })
+const cleanData = () => {
+  dataSourceMap.value.clear()
+  checkedPropertyKeys.value = []
+}
+
+defineExpose({ getDataSourceArray, cleanData })
 </script>
 
 <style lang="less" scoped>

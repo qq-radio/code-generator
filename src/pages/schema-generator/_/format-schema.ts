@@ -1,28 +1,18 @@
 import type { FormSchemaItem, TableSchemaItem } from '@/types'
 import { excludeObjectUndefinedProps } from '@/utils'
 
+type SearchConfig = {
+  label: string
+  prop: string
+  type?: string
+  component?: string
+}
+
 type AntdTableSchemaItem = {
   title?: string
   dataIndex?: string
   visible?: boolean
-  // for table search
-  searchAble?: boolean
-  type?: string // -> component
-  fieldName?: string
-  fieldLabel?: string
-}
-
-function getAntdType(component: string) {
-  switch (component) {
-    case 'Input':
-      return 'text'
-    case 'Select':
-      return 'select'
-    case 'InputNumber':
-      return 'input-number'
-    default:
-      break
-  }
+  searchConfig?: SearchConfig
 }
 
 export function formatAntdTableSchemas(schemas: TableSchemaItem[]): AntdTableSchemaItem[] {
@@ -34,22 +24,34 @@ export function formatAntdTableSchemas(schemas: TableSchemaItem[]): AntdTableSch
         dataIndex
       }
     }
-    if (ifShow === false && searchConfig) {
-      return {
-        visible: false,
-        searchAble: true,
-        type: getAntdType(searchConfig.component),
-        fieldName: searchConfig.field,
-        fieldLabel: searchConfig.label
-      }
+
+    let newSearchConfig: SearchConfig = {}
+
+    newSearchConfig.label = searchConfig.label
+    newSearchConfig.prop = searchConfig.field
+
+    if (searchConfig.component) {
+      newSearchConfig.component = searchConfig.component
     }
-    return {
-      title,
-      dataIndex,
-      searchAble: true,
-      type: getAntdType(searchConfig.component),
-      fieldName: searchConfig.field
+
+    if (searchConfig.type) {
+      newSearchConfig.type = searchConfig.type
     }
+
+    if (searchConfig.required) {
+      newSearchConfig.required = searchConfig.required
+    }
+
+    return ifShow === false
+      ? {
+          visible: false,
+          searchConfig: newSearchConfig
+        }
+      : {
+          title,
+          dataIndex,
+          searchConfig: newSearchConfig
+        }
   })
 }
 
@@ -77,11 +79,23 @@ function getAntdComponent(component: string) {
 
 export function formatAntdFormSchemas(schemas: FormSchemaItem[]): AntdFormSchemaItem[] {
   return schemas.map((schema) => {
-    const { field, component, ...rest } = schema
-    return excludeObjectUndefinedProps({
-      prop: field,
-      component: getAntdComponent(schema.component),
-      ...rest
-    })
+    const config = {
+      label: schema.label,
+      prop: schema.field
+    }
+
+    if (schema.component) {
+      config.component = schema.component
+    }
+
+    if (schema.type) {
+      config.type = schema.type
+    }
+
+    if (schema.required) {
+      config.required = schema.required
+    }
+
+    return config
   })
 }

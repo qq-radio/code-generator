@@ -16,7 +16,7 @@
           </a-form-item>
         </a-form>
         <div>
-          <a-button class="mr-4" type="primary" @click="fetchData">
+          <a-button class="mr-4" type="primary" @click="sendRequest">
             <template #icon>
               <RightOutlined />
             </template>
@@ -193,10 +193,6 @@ const fetchData = async () => {
   interfaceData.value = await yapiInterfaceGetApi(formValues.value)
 }
 
-const cleanData = async () => {
-  interfaceData.value = {}
-}
-
 const codeConfig = computed(() => getCodeConfig(formValues.value.codeType))
 const requestProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath))
 const reqQuery = computed<
@@ -221,6 +217,16 @@ const responseProperties = computed<Properties>(() => getValueByPath(interfaceDa
 
 const requestPanelRef = ref()
 const responsePanelRef = ref()
+
+const cleanData = () => {
+  requestPanelRef.value?.cleanData()
+  responsePanelRef.value?.cleanData()
+}
+
+const sendRequest = async () => {
+  cleanData()
+  fetchData()
+}
 
 const getDataSourceValues = (array: DataSourceItem[]) => {
   const object: Record<string, any> = {}

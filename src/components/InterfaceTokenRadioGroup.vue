@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="(group, index) in groups" :key="index">
-      <div c class="mb-2 border-0 border-b border-solid border-gray-500 pb-2">{{ group.title }}</div>
+      <div c class="pb-2 mb-2 border-0 border-b border-gray-500 border-solid">{{ group.title }}</div>
       <a-radio-group v-model:value="value" :options="group.children" @change="onChange" />
     </div>
   </div>
