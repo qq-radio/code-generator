@@ -15,9 +15,15 @@ export const yapiInterfaceGetApi = async (option: GetApiOption) => {
         'Content-type': 'application/json'
       }
     }
-    const { data } = await axios.get(url, options)
-    parseJson(data)
-    return data
+    // 就这样吧，先就这样吧，打补丁 哪里需要打哪里
+    const { data: result } = await axios.get(url, options)
+    return {
+      ...result,
+      data: {
+        ...result.data,
+        ...parseJson({ res_body: result.data.res_body })
+      }
+    }
   } catch (error) {
     console.error(`yapiInterfaceGetApi error：${error}`)
   }

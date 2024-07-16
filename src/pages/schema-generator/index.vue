@@ -119,7 +119,8 @@ const formConfigs: FormItem[] = [
     component: 'a-radio-group',
     componentProps: {
       options: codeConfigs.sort((a, b) => a.sort - b.sort).map((config) => ({ label: capitalizeFirstLetter(config.codeType), value: config.codeType })),
-      onChange: (event: any) => {
+      // 之前是onChange然后一直报function array的错 我不知道为什么 但是我也暂时用不到 所以先换成change？ 不过这样是不是就没效果了？
+      change: (event: any) => {
         cleanData()
         fetchData()
       }
@@ -238,7 +239,7 @@ const getSettingProperty = (schema: DataSourceItem) => {
   if (schema.component !== 'Input') {
     const property = codeConfig.value?.requestSettingConfig
       ?.find((i) => i?.component === 'Select')
-      ?.componentProps?.options.find((j: any) => j.value === schema.component)?.property
+      ?.componentProps?.options?.find((j: any) => j.value === schema.component)?.property
     return property ? { ...schema, componentProps: property } : schema
   }
   return schema

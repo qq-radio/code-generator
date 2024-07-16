@@ -62,21 +62,6 @@ type AntdFormSchemaItem = {
   required?: boolean
 }
 
-function getAntdComponent(component: string) {
-  switch (component) {
-    case 'Input':
-      return 'input'
-    case 'Select':
-      return 'select'
-    case 'InputNumber':
-      return 'input-number'
-    case 'Textarea':
-      return 'textarea'
-    default:
-      break
-  }
-}
-
 export function formatAntdFormSchemas(schemas: FormSchemaItem[]): AntdFormSchemaItem[] {
   return schemas.map((schema) => {
     const config = {
