@@ -52,6 +52,7 @@ specifiers:
   vue: ^3.4.27
   vue-json-pretty: ^2.4.0
   vue-router: ^4.3.2
+  vue-select: ^4.0.0-beta.6
   vue-tsc: ^1.8.27
   vuedraggable: 4.1.0
 
@@ -68,6 +69,7 @@ dependencies:
   vue: registry.npmmirror.com/vue/3.4.31_typescript@5.3.3
   vue-json-pretty: registry.npmmirror.com/vue-json-pretty/2.4.0_vue@3.4.31
   vue-router: registry.npmmirror.com/vue-router/4.4.0_vue@3.4.31
+  vue-select: registry.npmmirror.com/vue-select/4.0.0-beta.6_vue@3.4.31
   vuedraggable: registry.npmmirror.com/vuedraggable/4.1.0_vue@3.4.31
 
 devDependencies:
@@ -6760,6 +6762,17 @@ packages:
       vue: ^3.2.0
     dependencies:
       '@vue/devtools-api': registry.npmmirror.com/@vue/devtools-api/6.6.3
+      vue: registry.npmmirror.com/vue/3.4.31_typescript@5.3.3
+    dev: false
+
+  registry.npmmirror.com/vue-select/4.0.0-beta.6_vue@3.4.31:
+    resolution: {integrity: sha512-K+zrNBSpwMPhAxYLTCl56gaMrWZGgayoWCLqe5rWwkB8aUbAUh7u6sXjIR7v4ckp2WKC7zEEUY27g6h1MRsIHw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-select/-/vue-select-4.0.0-beta.6.tgz}
+    id: registry.npmmirror.com/vue-select/4.0.0-beta.6
+    name: vue-select
+    version: 4.0.0-beta.6
+    peerDependencies:
+      vue: 3.x
+    dependencies:
       vue: registry.npmmirror.com/vue/3.4.31_typescript@5.3.3
     dev: false
 

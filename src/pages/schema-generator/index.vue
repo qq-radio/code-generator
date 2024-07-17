@@ -273,6 +273,7 @@ const formatTableSchemas = (columns: TableSchemaItem[]) => {
 const needAction = ref(true)
 
 const getTableSchemas = () => {
+  const invisibleSchemas = []
   const columns = [...responseDataSource.value]
   for (const item of requestDataSource.value) {
     const columnIndex = columns.findIndex((i) => i.dataIndex === item.field)
@@ -287,11 +288,11 @@ const getTableSchemas = () => {
         ifShow: false,
         searchConfig: { ...item }
       }
-      columns.unshift(columnItem)
+      invisibleSchemas.push(columnItem)
     }
   }
 
-  return formatTableSchemas(columns)
+  return formatTableSchemas(invisibleSchemas.concat(columns))
 }
 
 const formatFormSchemas = (columns: FormSchemaItem[]) => {
@@ -347,7 +348,6 @@ const previewJson = (jsonType: JsonType) => {
       break
     case 'SCHEMA':
       previewJsonParams.value = getSchemas()
-      console.log('🚀 ~ previewJson ~ previewJsonParams.value:', previewJsonParams.value)
       break
     default:
       break

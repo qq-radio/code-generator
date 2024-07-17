@@ -18,17 +18,17 @@
         <div v-for="title in getDataSourceTitle" :key="title" class="element-row bg-slate-100">{{ capitalizeFirstLetter(title) }}:</div>
       </div>
       <Draggable :group="props.propertyType" :list="getDataSourceArray" itemKey="field" animation="340" :style="{ display: 'flex' }" @update="onDragUpdate">
-        <template #item="{ element }">
-          <div>
-            <div class="element-row" v-for="(column, columnIndex) in element" :key="columnIndex">
+        <template #item="{ element, index }">
+          <div :key="index">
+            <div class="element-row" v-for="column in element" :key="column.field">
               <template v-if="column.component === 'Input'">
                 <a-textarea v-model:value="column.value" v-bind="column.componentProps" :rows="1" style="width: 100%" />
               </template>
               <template v-if="column.field === 'component'">
-                <ComponentSelect v-model="column.value" />
+                <Select v-model="column.value" :options="componentOptions" />
               </template>
               <template v-if="column.field === 'type'">
-                <TypeSelect v-model="column.value" />
+                <Select v-model="column.value" :options="typeOptions" />
               </template>
               <template v-if="column.component === 'Checkbox'">
                 <a-checkbox v-model:checked="column.value">必填</a-checkbox>
@@ -45,6 +45,77 @@
 import type { PropertyType, Properties, SettingConfigItem, DataSourceItem } from '@/types'
 import { capitalizeFirstLetter } from '@/utils'
 import Draggable from 'vuedraggable'
+
+// 不应该放这 但是就放这把 暂时我也不知道放哪去
+const componentOptions = Object.freeze([
+  {
+    label: 'input',
+    value: 'input'
+  },
+  {
+    label: 'input-number',
+    value: 'input-number'
+  },
+  {
+    label: 'textarea',
+    value: 'textarea'
+  },
+  {
+    label: 'select',
+    value: 'select'
+  },
+  {
+    label: 'date-picker',
+    value: 'date-picker'
+  },
+  {
+    label: 'time-picker',
+    value: 'time-picker'
+  }
+  // 这个我用不到只是想说之前我预留了这个样的功能，啊 我很快就要看不懂自己写的什么代码了啊 啊
+  // {
+  //   label: 'ChannelType',
+  //   value: 'ChannelType',
+  //   property: {
+  //     options: 'TODO',
+  //     fieldNames: {
+  //       label: 'channelName',
+  //       value: 'id'
+  //     }
+  //   }
+  // },
+])
+
+const typeOptions = [
+  {
+    label: 'base-select',
+    value: 'base-select'
+  },
+  {
+    label: 'change-type-select',
+    value: 'change-type-select'
+  },
+  {
+    label: 'forklift-driver-type-select',
+    value: 'forklift-driver-type-select'
+  },
+  {
+    label: 'gyl-dept-tree-select',
+    value: 'gyl-dept-tree-select'
+  },
+  {
+    label: 'prod-line-select',
+    value: 'prod-line-select'
+  },
+  {
+    label: 'shift-select',
+    value: 'shift-select'
+  },
+  {
+    label: 'storage-type-select',
+    value: 'storage-type-select'
+  }
+]
 
 const props = defineProps({
   propertyType: { type: String as () => PropertyType, required: true },
@@ -189,7 +260,7 @@ defineExpose({ getDataSourceArray, cleanData })
 
 <style lang="less" scoped>
 .element-row {
-  @apply h-12 w-44 overflow-hidden border border-solid border-slate-300 p-2;
+  @apply h-12 w-52 border border-solid border-slate-300 p-2;
 }
 
 /deep/ .ant-checkbox-wrapper {
