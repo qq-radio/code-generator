@@ -71,6 +71,7 @@
         />
       </a-collapse-panel>
       <a-collapse-panel v-if="codeConfig?.responseSettingConfig" key="response-panel" header="Response panel">
+        <a-checkbox class="mb-2" v-model:checked="isAddActionField">Add Action Field</a-checkbox>
         <PropertyPanel ref="responsePanelRef" propertyType="RESPONSE" :settingConfig="codeConfig.responseSettingConfig" :properties="responseProperties" />
       </a-collapse-panel>
     </a-collapse>
@@ -253,10 +254,12 @@ const requestDataSource = computed(() => {
 
 const responseDataSource = computed(() => responsePanelRef.value.getDataSourceArray.map(getDataSourceValues))
 
+const isAddActionField = ref(false)
+
 const formatTableSchemas = (columns: TableSchemaItem[]) => {
   if (formValues.value.framework === 'ANTD') {
     const columnsvalue = formatAntdTableSchemas(columns)
-    if (needAction.value) {
+    if (isAddActionField.value) {
       columnsvalue.push({
         title: '操作',
         dataIndex: 'actions',
@@ -269,8 +272,6 @@ const formatTableSchemas = (columns: TableSchemaItem[]) => {
   }
   return columns
 }
-
-const needAction = ref(true)
 
 const getTableSchemas = () => {
   const invisibleSchemas = []
