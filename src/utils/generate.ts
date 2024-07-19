@@ -66,9 +66,11 @@ export function generateApiFileNew(apis: ApiItem[], options) {
 
     const name = hasPathVariable ? pathToName(removePathVariable(api.path), wordNumber) : pathToName(api.path, wordNumber)
 
-    const requestKey = hasPathVariable ? 'id' : 'data'
+    let requestKey = hasPathVariable ? 'id' : 'data'
 
     const method = api.method.toLowerCase()
+
+    const requestKeyResult = method == 'get' ? ' { params: data }' : requestKey
 
     // 这是以前
     // const requestPath = getPath(api.path)
@@ -78,7 +80,7 @@ export function generateApiFileNew(apis: ApiItem[], options) {
     if (api.path.includes('import') || api.path.includes('export')) {
       content += `// ${description} \n export const ${name}Url = \`\${BASE_SERVICE_URL}${requestPath}\`\n\n`
     } else {
-      content += `// ${description} \n export const ${name}Api = ${requestKey} => axios.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKey}) \n\n`
+      content += `// ${description} \n export const ${name}Api = ${requestKey} => axios.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKeyResult}) \n\n`
     }
   })
 

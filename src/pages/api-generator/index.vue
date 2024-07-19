@@ -50,6 +50,7 @@ import { yapiInterfaceListApi } from '@/https/yapi'
 import { EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
 import PreviewJavaScriptModal from '@/components/PreviewJavaScriptModal.vue'
 import BasicFormItem from '@/components/FormItem.vue'
+import { message } from 'ant-design-vue'
 
 const formConfigs: FormItem[] = [
   {
@@ -127,6 +128,7 @@ const fetchData = async () => {
   //   return
   // }
   interfaceData.value = await yapiInterfaceListApi(formValues.value)
+  formValues.value.serviceUrl = undefined
 }
 
 onMounted(() => {
@@ -157,6 +159,10 @@ const isModalVisible = ref(false)
 const code = ref()
 
 const previewJavaScript = async () => {
+  if (!formValues.value.serviceUrl) {
+    alert('serviceUrl不能为空')
+    return
+  }
   code.value = generateApiFileNew(lists.value, {
     serviceName: 'axios',
     serviceUrl: formValues.value.serviceUrl,
