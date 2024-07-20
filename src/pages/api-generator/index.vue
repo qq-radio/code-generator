@@ -155,6 +155,9 @@ const downloadApis = () => {
   downloadJavascript('apis', apis.value)
 }
 
+// 这种情况可能为空，要兼容
+//  export const /pieceSalaryMonthlySummary/Api = data => axios.post(`${BASE_SERVICE_URL}/`,  data)
+
 const isModalVisible = ref(false)
 const code = ref()
 
