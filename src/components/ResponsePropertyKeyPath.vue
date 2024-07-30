@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import { mapObjectArrayFields } from '@/utils'
 
-const modules: Record<string, Config> = import.meta.glob('/interface-token.json', {
+const modules: Record<string, Config> = import.meta.glob('/privacy-token.json', {
   eager: true,
   import: 'default'
 })

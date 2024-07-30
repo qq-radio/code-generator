@@ -87,3 +87,10 @@ export function mapObjectArrayFields(array: tY[], fieldPairs: tY) {
 
   return array.map((item) => mapObjectFields(item, fieldPairs))
 }
+
+export function kebabToCamelCase(word: string) {
+  return word
+    .split('-')
+    .map((str) => str.replace(/[a-z]/, (w) => w.toUpperCase()))
+    .join('')
+}

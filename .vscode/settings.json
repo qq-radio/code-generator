@@ -1,0 +1,41 @@
+{
+  // 开启预览模式下，打开文件不会关闭当前
+  "workbench.editor.enablePreview": false,
+  // 保存时自动格式化
+  "editor.formatOnSave": true,
+  // 使用prettier格式化
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // turbo快速打印
+  "turboConsoleLog.delimiterInsideMessage": "",
+  "turboConsoleLog.insertEnclosingClass": false,
+  "turboConsoleLog.insertEnclosingFunction": false,
+  "turboConsoleLog.logMessagePrefix": "",
+  // 文件嵌套展示
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.env": "$(capture).env.*",
+    ".eslintrc.cjs": ".eslintignore,.prettierignore,.stylelintignore,.commitlintrc.*,.prettierrc.*,.stylelintrc.*",
+    ".gitignore": "privacy-token.json",
+    "auto-import.d.ts": "auto-import-component.d.ts,auto-import-router.d.ts,.auto-import-eslintrc.json,env.d.ts",
+    "package.json": "pnpm-lock.yaml,.npmrc",
+    "tailwind.config.js": "postcss.config.js"
+  }
+}

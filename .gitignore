@@ -19,8 +19,6 @@ coverage
 /cypress/screenshots/
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 *.suo
 *.ntvs*
@@ -30,10 +28,11 @@ coverage
 
 *.tsbuildinfo
 
+# Types
+auto-import.d.ts
+.auto-import-eslintrc.json
+auto-import-component.d.ts
+auto-import-router.d.ts
+
 # Private files
-interface-token.json
-
-
-#Types
-components.d.ts
-auto-imports.d.ts
+privacy-*.json

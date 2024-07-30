@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, ConfigEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
@@ -10,17 +10,18 @@ import VueRouter from 'unplugin-vue-router/vite'
 import Components from 'unplugin-vue-components/vite'
 const resolve = (dir: string) => path.join(__dirname, dir)
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }: ConfigEnv) => {
   const env = loadEnv(mode, process.cwd())
   return {
     plugins: [
-      Components({}),
-      VueRouter({}),
+      Components({ dts: 'auto-import-component.d.ts' }),
+      VueRouter({
+        dts: 'auto-import-router.d.ts' 
+      }),
       vue(),
       vueJsx(),
       AutoImport({
-        dts: resolve('./src/types/auto-imports.d.ts'),
+        dts: resolve('auto-import.d.ts'),
         imports: [
           'vue',
           'pinia',
@@ -31,7 +32,7 @@ export default defineConfig(({ mode }) => {
         ],
         eslintrc: {
           enabled: true,
-          filepath: './.eslintrc-auto-import.json'
+          filepath: '.auto-import-eslintrc.json'
         }
       }),
       VueDevTools()

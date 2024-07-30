@@ -16,11 +16,9 @@
   "vueIndentScriptAndStyle": false,
   "proseWrap": "always",
   "insertPragma": false,
-  "printWidth": 160,
+  "printWidth": 120,
   "requirePragma": false,
   "useTabs": false,
   "embeddedLanguageFormatting": "auto",
-  "plugins": [
-    "prettier-plugin-tailwindcss"
-  ]
+  "plugins": ["prettier-plugin-tailwindcss"]
 }
