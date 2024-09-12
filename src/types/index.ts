@@ -46,7 +46,13 @@ export type Config = {
 
 export type DataSourceItem = SettingConfigItem & { value: string }
 
-export type FormItemComponent = 'a-input' | 'a-select' | 'a-radio-group' | 'a-checkbox-group' | 'InterfaceTokenRadioGroup' | 'response-property-key-path'
+export type FormItemComponent =
+  | 'a-input'
+  | 'a-select'
+  | 'a-radio-group'
+  | 'a-checkbox-group'
+  | 'InterfaceTokenRadioGroup'
+  | 'response-property-key-path'
 
 export type FormItem = {
   label: string
@@ -65,7 +71,7 @@ export type ApiItem = {
   path: string
 }
 
-export type FormSchemaItem = {
+export type SchemaItem = {
   label: string
   field: string
   component: string
@@ -75,5 +81,5 @@ export type TableSchemaItem = {
   title: string
   dataIndex: string
   ifShow?: boolean
-  searchConfig?: FormSchemaItem
+  searchConfig?: SchemaItem
 }

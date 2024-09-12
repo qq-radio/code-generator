@@ -1,17 +1,16 @@
-import type { FormSchemaItem, Rule, RuleTrigger } from '@/components/basic-form/src/types/form'
 import { getMessage } from './normalize-schema'
 import { isArray } from 'remeda'
 
-const TRIGGER: RuleTrigger[] = ['change', 'blur']
+const TRIGGER: Form.RuleTrigger[] = ['change', 'blur']
 
-function getRequiredRule(formItem: FormSchemaItem) {
+function getRequiredRule(formItem: Form.SchemaItem) {
   return {
     required: true,
     message: getMessage(formItem)
   }
 }
 
-function getMinLimitRule(formItem: FormSchemaItem): Rule {
+function getMinLimitRule(formItem: Form.SchemaItem): Form.Rule {
   return {
     trigger: TRIGGER,
     validator: (_rule, value, callback) => {
@@ -24,7 +23,7 @@ function getMinLimitRule(formItem: FormSchemaItem): Rule {
   }
 }
 
-function getMaxLimitRule(formItem: FormSchemaItem): Rule {
+function getMaxLimitRule(formItem: Form.SchemaItem): Form.Rule {
   return {
     trigger: TRIGGER,
     validator: (_rule, value, callback) => {
@@ -37,7 +36,7 @@ function getMaxLimitRule(formItem: FormSchemaItem): Rule {
   }
 }
 
-function normalizeRule(formItem: FormSchemaItem) {
+function normalizeRule(formItem: Form.SchemaItem) {
   const { required, minLimit, maxLimit } = formItem
 
   const rules = isArray(formItem.rules) ? formItem.rules : []

@@ -21,7 +21,8 @@ export const yapiInterfaceGetApi = async (option: GetApiOption) => {
       ...result,
       data: {
         ...result.data,
-        ...parseJson({ res_body: result.data.res_body })
+        ...parseJson({ res_body: result.data.res_body }),
+        ...parseJson({ req_body_other: result.data.req_body_other })
       }
     }
   } catch (error) {

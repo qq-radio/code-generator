@@ -1,21 +1,20 @@
-import type { FormSchema, FormSchemaItem } from '@/components/basic-form/src/types/form'
 import { getComponentPrefix } from './get-component'
 import { getSchema } from './register-schema'
 import { normalizeRule } from './normalize-rule'
 import { merge } from 'remeda'
 
-function getMessage(formItem: FormSchemaItem) {
+function getMessage(formItem: Form.SchemaItem) {
   return getComponentPrefix(formItem.component) + formItem.label
 }
 
-function getPlaceholder(formItem: FormSchemaItem) {
+function getPlaceholder(formItem: Form.SchemaItem) {
   if (formItem.component === 'range-picker') {
     return ['开始时间', '结束时间']
   }
   return getMessage(formItem)
 }
 
-function addFormItemPlaceholder(formItem: FormSchemaItem) {
+function addFormItemPlaceholder(formItem: Form.SchemaItem) {
   return merge(
     {
       componentProps: {
@@ -26,7 +25,7 @@ function addFormItemPlaceholder(formItem: FormSchemaItem) {
   )
 }
 
-function addFormItemAllowClear(formItem: FormSchemaItem) {
+function addFormItemAllowClear(formItem: Form.SchemaItem) {
   return merge(
     {
       componentProps: {
@@ -37,7 +36,7 @@ function addFormItemAllowClear(formItem: FormSchemaItem) {
   )
 }
 
-function addFormItemSchema(formItem: FormSchemaItem) {
+function addFormItemSchema(formItem: Form.SchemaItem) {
   if (formItem.type) {
     return merge(getSchema(formItem.type), formItem)
   }
@@ -45,7 +44,7 @@ function addFormItemSchema(formItem: FormSchemaItem) {
   return formItem
 }
 
-function addFormItemTimeFormat(formItem: FormSchemaItem) {
+function addFormItemTimeFormat(formItem: Form.SchemaItem) {
   if (formItem.component === 'range-picker') {
     return merge(
       {
@@ -61,15 +60,15 @@ function addFormItemTimeFormat(formItem: FormSchemaItem) {
   return formItem
 }
 
-function filterSchema(schema: FormSchema) {
+function filterSchema(schema: Form.Schema) {
   return schema.filter((schemaItem) => schemaItem.prop)
 }
 
-function sortSchema(schema: FormSchema) {
+function sortSchema(schema: Form.Schema) {
   return schema.sort((a, b) => (a.sort || 0) - (b.sort || 0))
 }
 
-function normalizeSchemaItem(schemaItem: FormSchemaItem) {
+function normalizeSchemaItem(schemaItem: Form.SchemaItem) {
   return [
     addFormItemSchema,
     addFormItemPlaceholder,
@@ -79,7 +78,7 @@ function normalizeSchemaItem(schemaItem: FormSchemaItem) {
   ].reduce((acc, func) => func(acc), schemaItem)
 }
 
-function normalizeSchema(schema: FormSchema) {
+function normalizeSchema(schema: Form.Schema) {
   return sortSchema(filterSchema(schema)).map(normalizeSchemaItem)
 }
 

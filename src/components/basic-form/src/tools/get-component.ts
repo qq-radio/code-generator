@@ -1,35 +1,58 @@
 import allComponent from '../component'
-import type { AllComponentType } from '@/components/basic-form/src/types/form'
-import { kebabToCamelCase } from '@/utils'
 
-function getComponentType(component: AllComponentType) {
-  const antdComponent = [...allComponent.antdComponent.input, ...allComponent.antdComponent.select]
-  const isAntd = antdComponent.includes(component)
-  if (isAntd) {
+function isAntdComponent(component: Form.ComponentType): component is Form.AntdComponentType {
+  return allComponent.antdComponent.includes(component as Form.AntdComponentType)
+}
+
+function isCustomComponent(component: Form.ComponentType): component is Form.CustomComponentType {
+  return allComponent.customComponent.includes(component as Form.CustomComponentType)
+}
+
+function getComponentType(component: Form.ComponentType) {
+  if (isAntdComponent(component)) {
     return 'a-' + component
   }
 
-  const customComponent = [...allComponent.customComponent.input, ...allComponent.customComponent.select]
-  const isCustom = customComponent.includes(component)
-  if (isCustom) {
-    return 'Custom' + kebabToCamelCase(component)
+  if (isCustomComponent(component)) {
+    return 'custom' + component
   }
 
-  return 'a-input'
+  return ''
 }
 
-function getComponentPrefix(component: AllComponentType) {
-  const inputs = [...allComponent.antdComponent.input, ...allComponent.customComponent.input]
-  if (inputs.includes(component)) {
-    return '请输入'
+function getComponentPrefix(component: Form.ComponentType) {
+  let prefix
+  switch (component) {
+    case 'input':
+    case 'input-number':
+    case 'input-password':
+    case 'textarea':
+    case 'input-number-range':
+      prefix = '请输入'
+      break
+    case 'switch':
+    case 'radio-group':
+    case 'checkbox-group':
+    case 'select':
+    case 'tree-select':
+    case 'date-picker':
+    case 'time-picker':
+    case 'month-picker':
+    case 'range-picker':
+    case 'cascader':
+    case 'api-select':
+    case 'api-tree-select':
+    case 'month-range-picker':
+    case 'cascader':
+    case 'range-picker-with-disabled':
+      prefix = '请选择'
+      break
+    default:
+      prefix = '请输入'
+      break
   }
 
-  const selects = [...allComponent.antdComponent.select, ...allComponent.customComponent.select]
-  if (selects.includes(component)) {
-    return '请选择'
-  }
-
-  return '请输入'
+  return prefix
 }
 
 export { getComponentType, getComponentPrefix }

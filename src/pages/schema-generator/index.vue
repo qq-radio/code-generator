@@ -72,7 +72,12 @@
       </a-collapse-panel>
       <a-collapse-panel v-if="codeConfig?.responseSettingConfig" key="response-panel" header="Response panel">
         <a-checkbox class="mb-2" v-model:checked="isAddActionField">Add Action Field</a-checkbox>
-        <PropertyPanel ref="responsePanelRef" propertyType="RESPONSE" :settingConfig="codeConfig.responseSettingConfig" :properties="responseProperties" />
+        <PropertyPanel
+          ref="responsePanelRef"
+          propertyType="RESPONSE"
+          :settingConfig="codeConfig.responseSettingConfig"
+          :properties="responseProperties"
+        />
       </a-collapse-panel>
     </a-collapse>
   </div>
@@ -88,7 +93,7 @@ export default {
 import { downloadJson } from '@/utils/download'
 import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 import { codeConfigs } from '@/configs'
-import type { Framework, CodeType, Properties, DataSourceItem, FormItem, TableSchemaItem, FormSchemaItem } from '@/types'
+import type { Framework, CodeType, Properties, DataSourceItem, FormItem, TableSchemaItem, SchemaItem } from '@/types'
 import { formatAntdTableSchemas, formatAntdFormSchemas } from './_/format-schema'
 import { yapiInterfaceGetApi } from '@/https/yapi'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
@@ -119,7 +124,9 @@ const formConfigs: FormItem[] = [
     field: 'codeType',
     component: 'a-radio-group',
     componentProps: {
-      options: codeConfigs.sort((a, b) => a.sort - b.sort).map((config) => ({ label: capitalizeFirstLetter(config.codeType), value: config.codeType })),
+      options: codeConfigs
+        .sort((a, b) => a.sort - b.sort)
+        .map((config) => ({ label: capitalizeFirstLetter(config.codeType), value: config.codeType })),
       // 之前是onChange然后一直报function array的错 我不知道为什么 但是我也暂时用不到 所以先换成change？ 不过这样是不是就没效果了？
       change: (event: any) => {
         cleanData()
@@ -196,7 +203,9 @@ const fetchData = async () => {
 }
 
 const codeConfig = computed(() => getCodeConfig(formValues.value.codeType))
-const requestProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath))
+const requestProperties = computed<Properties>(() =>
+  getValueByPath(interfaceData.value, formValues.value.requestPropertyKeyPath)
+)
 const reqQuery = computed<
   Array<{
     name: string
@@ -215,7 +224,9 @@ const reqQueryProperties = computed(() => {
   })
   return obj
 })
-const responseProperties = computed<Properties>(() => getValueByPath(interfaceData.value, formValues.value.responsePropertyKeyPath))
+const responseProperties = computed<Properties>(() =>
+  getValueByPath(interfaceData.value, formValues.value.responsePropertyKeyPath)
+)
 
 const requestPanelRef = ref()
 const responsePanelRef = ref()
@@ -296,7 +307,7 @@ const getTableSchemas = () => {
   return formatTableSchemas(invisibleSchemas.concat(columns))
 }
 
-const formatFormSchemas = (columns: FormSchemaItem[]) => {
+const formatFormSchemas = (columns: SchemaItem[]) => {
   if (formValues.value.framework === 'ANTD') {
     return formatAntdFormSchemas(columns)
   }

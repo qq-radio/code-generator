@@ -1,25 +1,25 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
-  ],
+  "$schema": "https://json.schemastore.org/tsconfig",
   "include": [
+    "src/**/*.vue",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "./*.ts",
+    "src/**/*.d.ts",
     "./typed-router.d.ts",
-    "./types/components.d.ts"
+    "./types/components.d.ts",
+    "auto-import.d.ts"
   ],
-  // ...
   "compilerOptions": {
-    "moduleResolution": "Bundler",
-    "types": [
-      "unplugin-vue-router/client"
-    ]
+    // "module": "NodeNext",
+    // "moduleResolution": "nodenext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "noImplicitAny": true,
+    "types": ["unplugin-vue-router/client"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

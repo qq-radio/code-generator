@@ -4,7 +4,7 @@
       <a-row :gutter="layout.gutter">
         <template v-for="schemaItem in formSchema">
           <template v-if="schemaItem.component === 'sub-title'">
-            <div class="tw-mb-3 tw-ml-20 tw-font-bold tw-text-lg" :key="schemaItem.prop">
+            <div class="mb-3 ml-20 text-lg font-bold" :key="schemaItem.prop">
               {{ schemaItem.label }}
             </div>
           </template>
@@ -28,7 +28,7 @@
                   style="width: 100%"
                   @change="(...v) => onChange(schemaItem, v)"
                 />
-                <div v-if="schemaItem.maxLimit" class="tw-text-right">
+                <div v-if="schemaItem.maxLimit" class="text-right">
                   {{ getLimitText(schemaItem) }}
                 </div>
               </a-form-model-item>
@@ -41,12 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { getComponent } from './tools/register-material'
+import { getComponent } from './tools/get-component'
 import { normalizeSchema } from './tools/normalize-schema'
 import { mapObjectArrayFields } from '@/utils'
 import { formatTime } from '@/utils/time'
 import { isPlainObject, isFunction, isNullish, isObject, isArray, merge } from 'remeda'
-import type { FormSchema, FormLayout } from './types/form'
 
 const props = defineProps({
   disabled: { type: Boolean, default: false },
@@ -58,11 +57,11 @@ const props = defineProps({
       wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
     })
   },
-  schema: { type: Array as () => FormSchema[], default: () => [] }
+  schema: { type: Array as () => Schema[], default: () => [] }
 })
 
 const formModelRef = ref()
-const formSchema = ref<FormSchema[]>([])
+const formSchema = ref<Schema[]>([])
 const formModel = reactive<Record<string, any>>({})
 
 const setDefaultFormModel = () => {
@@ -84,33 +83,33 @@ watch(
 
 const getForm = () => formModelRef.value
 
-const getVIf = (schemaItem: FormSchema) => {
+const getVIf = (schemaItem: Schema) => {
   const { hidden, vIf } = schemaItem
   if (hidden) return false
   if (isFunction(vIf)) return vIf(formModel, schemaItem)
   return isNullish(vIf) ? true : vIf
 }
 
-const getCol = (schemaItem: FormSchema) => schemaItem.colConfig?.col || props.layout.col
-const getLabelCol = (schemaItem: FormSchema) => schemaItem.colConfig?.labelCol || props.layout.labelCol
-const getWrapperCol = (schemaItem: FormSchema) => schemaItem.colConfig?.wrapperCol || props.layout.wrapperCol
+const getCol = (schemaItem: Schema) => schemaItem.colConfig?.col || props.layout.col
+const getLabelCol = (schemaItem: Schema) => schemaItem.colConfig?.labelCol || props.layout.labelCol
+const getWrapperCol = (schemaItem: Schema) => schemaItem.colConfig?.wrapperCol || props.layout.wrapperCol
 
-const getComponent = (schemaItem: FormSchema) => getComponent(schemaItem.component)
+const getComponent = (schemaItem: Schema) => getComponent(schemaItem.component)
 
-const getComponentProps = (schemaItem: FormSchema) => {
+const getComponentProps = (schemaItem: Schema) => {
   const { componentProps = {} } = schemaItem
   if (!isPlainObject(componentProps)) return componentProps
   return { ...componentProps, disabled: getDisabled(schemaItem), options: getOptions(schemaItem) }
 }
 
-const getDisabled = (schemaItem: FormSchema) => {
+const getDisabled = (schemaItem: Schema) => {
   const { disabled } = schemaItem.componentProps
   if (isNullish(disabled)) return props.disabled
   if (isFunction(disabled)) return disabled({ formModel, schemaItem })
   return disabled
 }
 
-const getOptions = (schemaItem: FormSchema) => {
+const getOptions = (schemaItem: Schema) => {
   if (schemaItem.component !== 'select') return
   const { options, labelField, valueField } = schemaItem.componentProps
   let realOptions = []
@@ -130,7 +129,7 @@ const getOptions = (schemaItem: FormSchema) => {
   return realOptions
 }
 
-const getComponentListeners = (schemaItem: FormSchema) => {
+const getComponentListeners = (schemaItem: Schema) => {
   const { componentListeners } = schemaItem
   if (isFunction(componentListeners)) {
     return componentListeners(getFormActions()) || {}
@@ -138,7 +137,7 @@ const getComponentListeners = (schemaItem: FormSchema) => {
   return componentListeners || {}
 }
 
-const getLimitText = (schemaItem: FormSchema) => {
+const getLimitText = (schemaItem: Schema) => {
   return (formModel[schemaItem.prop]?.length || 0) + '/' + schemaItem.maxLimit
 }
 
@@ -149,7 +148,7 @@ const getFormActions = () => ({
   clearValidate: clearValidate
 })
 
-const onSelectChange = (schemaItem: FormSchema, event: any) => {
+const onSelectChange = (schemaItem: Schema, event: any) => {
   const { componentProps: { mode, extraFields } = {} } = schemaItem
   if (mode === 'multiple') return
   if (!isArray(extraFields)) return
@@ -164,7 +163,7 @@ const onSelectChange = (schemaItem: FormSchema, event: any) => {
   })
 }
 
-const onTreeSelectChange = (schemaItem: FormSchema, event: any) => {
+const onTreeSelectChange = (schemaItem: Schema, event: any) => {
   const { componentProps: { mode, extraFields } = {} } = schemaItem
   if (mode === 'multiple') return
   if (!isArray(extraFields)) return
@@ -179,7 +178,7 @@ const onTreeSelectChange = (schemaItem: FormSchema, event: any) => {
   })
 }
 
-const onTimeRangeChange = (schemaItem: FormSchema, event: any) => {
+const onTimeRangeChange = (schemaItem: Schema, event: any) => {
   const { componentProps: { timeRangeMapFields, format } = {} } = schemaItem
   if (!isArray(timeRangeMapFields)) return
 
@@ -193,7 +192,7 @@ const onTimeRangeChange = (schemaItem: FormSchema, event: any) => {
   })
 }
 
-const onChange = (schemaItem: FormSchema, event: any) => {
+const onChange = (schemaItem: Schema, event: any) => {
   if (['select', 'api-select'].includes(schemaItem.component)) {
     onSelectChange(schemaItem, event)
   }
@@ -245,7 +244,7 @@ const getSchemaItemIndex = (prop: string) => {
   return formSchema.value.findIndex((schemaItem) => schemaItem.prop === prop)
 }
 
-const updateSchema = (schemaItem: FormSchema) => {
+const updateSchema = (schemaItem: Schema) => {
   const targetIndex = getSchemaItemIndex(schemaItem.prop)
   const newSchemaItem = merge(formSchema.value[targetIndex], schemaItem)
   formSchema.value.splice(targetIndex, 1, newSchemaItem)

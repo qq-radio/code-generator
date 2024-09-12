@@ -1,8 +1,4 @@
-import type { SchemaType, DomainFormSchema } from '../types/form'
-
-type SchemaMap = Map<SchemaType, DomainFormSchema>
-
-const schemaMap: SchemaMap = new Map()
+const schemaMap = new Map<Form.SchemaType, Form.DomainSchemaItem>()
 
 register()
 
@@ -13,13 +9,13 @@ function register() {
   })
 
   for (const path in modules) {
-    const name = path.replace(/^.*\/([^\/]+)\.ts$/, '$1') as SchemaType
-    const value = modules[path] as DomainFormSchema
+    const name = path.replace(/^.*\/([^\/]+)\.ts$/, '$1') as Form.SchemaType
+    const value = modules[path] as Form.DomainSchemaItem
     schemaMap.set(name, value)
   }
 }
 
-function getSchema(type: SchemaType) {
+function getSchema(type: Form.SchemaType) {
   return schemaMap.get(type)
 }
 

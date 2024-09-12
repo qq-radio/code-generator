@@ -1,4 +1,4 @@
-import type { FormSchemaItem, TableSchemaItem } from '@/types'
+import type { SchemaItem, TableSchemaItem } from '@/types'
 import { excludeObjectUndefinedProps } from '@/utils'
 
 type SearchConfig = {
@@ -62,7 +62,7 @@ type AntdFormSchemaItem = {
   required?: boolean
 }
 
-export function formatAntdFormSchemas(schemas: FormSchemaItem[]): AntdFormSchemaItem[] {
+export function formatAntdFormSchemas(schemas: SchemaItem[]): AntdFormSchemaItem[] {
   return schemas.map((schema) => {
     const config = {
       label: schema.label,
