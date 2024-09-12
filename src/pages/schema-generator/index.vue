@@ -94,7 +94,12 @@ import { downloadJson } from '@/utils/download'
 import { capitalizeFirstLetter, getValueByPath, checkNotEmptyKeyValue } from '@/utils'
 import { codeConfigs } from '@/configs'
 import type { Framework, CodeType, Properties, DataSourceItem, FormItem, TableSchemaItem, SchemaItem } from '@/types'
-import { formatAntdTableSchemas, formatAntdFormSchemas } from './_/format-schema'
+import {
+  formatAntdTableSchemas,
+  formatAntdFormSchemas,
+  formatEplusFormSchemas,
+  formatEPlusTableSchemas
+} from './_/format-schema'
 import { yapiInterfaceGetApi } from '@/https/yapi'
 import { DownloadOutlined, EyeOutlined, RightOutlined } from '@ant-design/icons-vue'
 import { Descriptions, message } from 'ant-design-vue'
@@ -115,6 +120,10 @@ const formConfigs: FormItem[] = [
         {
           label: 'Antd Admin',
           value: 'ANTD'
+        },
+        {
+          label: 'EPlus',
+          value: 'EPLUS'
         }
       ]
     }
@@ -164,7 +173,7 @@ type FetchConfig = {
   responsePropertyKeyPath: string
 }
 const formValues: Ref<FetchConfig & { [key: string]: string }> = ref({
-  framework: 'ANTD',
+  framework: 'EPLUS',
   codeType: 'TABLE',
   projectToken: '',
   interfaceId: '',
@@ -281,6 +290,19 @@ const formatTableSchemas = (columns: TableSchemaItem[]) => {
     }
     return columnsvalue
   }
+  if (formValues.value.framework === 'EPLUS') {
+    const columnsvalue = formatEPlusTableSchemas(columns)
+    if (isAddActionField.value) {
+      columnsvalue.push({
+        label: '操作',
+        prop: 'actions',
+        scopedSlots: { customRender: 'actions' },
+        fixed: 'right',
+        width: 120
+      })
+    }
+    return columnsvalue
+  }
   return columns
 }
 
@@ -310,6 +332,9 @@ const getTableSchemas = () => {
 const formatFormSchemas = (columns: SchemaItem[]) => {
   if (formValues.value.framework === 'ANTD') {
     return formatAntdFormSchemas(columns)
+  }
+  if (formValues.value.framework === 'EPLUS') {
+    return formatEplusFormSchemas(columns)
   }
   return columns
 }
