@@ -38,7 +38,9 @@ export function generateApiFile(apis: ApiItem[], serviceName = 'todoService', wo
 
     const description = api.title
 
-    const name = hasPathVariable ? pathToName(removePathVariable(api.path), wordNumber) : pathToName(api.path, wordNumber)
+    const name = hasPathVariable
+      ? pathToName(removePathVariable(api.path), wordNumber)
+      : pathToName(api.path, wordNumber)
 
     const requestKey = hasPathVariable ? 'id' : 'data'
 
@@ -54,7 +56,7 @@ export function generateApiFile(apis: ApiItem[], serviceName = 'todoService', wo
   return outputFileContent
 }
 
-export function generateApiFileNew(apis: ApiItem[], options) {
+export function generateApiFileNew(apis: ApiItem[], options: { serviceName: any; serviceUrl: any; wordNumber: any }) {
   const { serviceName = 'todoService', serviceUrl = 'todoServiceUrl', wordNumber = 1 } = options
 
   let content = ''
@@ -64,7 +66,9 @@ export function generateApiFileNew(apis: ApiItem[], options) {
 
     const description = api.title
 
-    const name = hasPathVariable ? pathToName(removePathVariable(api.path), wordNumber) : pathToName(api.path, wordNumber)
+    const name = hasPathVariable
+      ? pathToName(removePathVariable(api.path), wordNumber)
+      : pathToName(api.path, wordNumber)
 
     let requestKey = hasPathVariable ? 'id' : 'data'
 
@@ -80,13 +84,17 @@ export function generateApiFileNew(apis: ApiItem[], options) {
     if (api.path.includes('import') || api.path.includes('export')) {
       content += `// ${description} \n export const ${name}Url = \`\${BASE_SERVICE_URL}${requestPath}\`\n\n`
     } else {
-      content += `// ${description} \n export const ${name}Api = ${requestKey} => axios.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKeyResult}) \n\n`
+      content += `// ${description} \n export const ${name}Api = ${requestKey} => request.${method}(\`\${BASE_SERVICE_URL}${requestPath}\`,  ${requestKeyResult}) \n\n`
     }
   })
 
   const base = `const BASE_SERVICE_URL = '${serviceUrl}'\n\n`
 
-  const outputFileContent = `import { axios } from '@/utils/request';\n\n${base}\n\n${content}`
+  // 这是之前绩效的
+  // const outputFileContent = `import { axios } from '@/utils/request';\n\n${base}\n\n${content}`
+
+  // 现在换成中台的
+  const outputFileContent = `import request from "@/router/axios";\n\n${base}\n\n${content}`
 
   return outputFileContent
 }
